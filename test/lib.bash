@@ -151,6 +151,18 @@ function run_knative_serving_rolling_upgrade_tests {
   timeout 900 '[[ $(oc get services.serving.knative.dev upgrade-probe -n serving-tests -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") != True ]]' || return 1
 
   PROBER_PID=$!
+  echo "PROBER_PID is ${PROBER_PID}"
+
+  rm -f /tmp/done-signal
+  go_test_e2e -tags=performance -timeout=20m ./test/performance -run ^TestScaleRevisionByLoad$ \
+    --imagetemplate "$image_template" \
+    --kubeconfig "$KUBECONFIG" &
+
+  SCALE_PID=$!
+  echo "SCALE_PID is ${SCALE_PID}"
+
+  # wait for SCALE tests to start and scale up
+  sleep 120
 
   if [[ $UPGRADE_SERVERLESS == true ]]; then
     local serving_version
@@ -176,6 +188,7 @@ function run_knative_serving_rolling_upgrade_tests {
       timeout 900 '[[ ! ( $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
     fi
     end_prober_test ${PROBER_PID}
+    end_scale_test ${SCALE_PID}
   fi
 
   # Might not work in OpenShift CI but we want it here so that we can consume this script later and re-use
@@ -219,6 +232,13 @@ function end_prober_test {
   echo "done" > /tmp/prober-signal
   logger.info "Waiting for prober test to finish"
   wait "${PROBER_PID}"
+}
+
+function end_scale_test {
+  local SCALE_PID=$1
+  touch /tmp/done-signal
+  logger.info "Waiting for Scale test to finish"
+  wait "${SCALE_PID}"
 }
 
 function run_knative_serving_operator_tests {
