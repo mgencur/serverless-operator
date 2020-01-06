@@ -73,7 +73,7 @@ function checkout_knative_serving {
   # Checkout the relevant code to run
   export KNATIVE_SERVING_HOME="$GOPATH/src/knative.dev/serving"
   mkdir -p "$KNATIVE_SERVING_HOME"
-  git clone -b "release-${knative_version}" --depth 1 https://github.com/openshift/knative-serving.git "$KNATIVE_SERVING_HOME"
+  git clone -b "modify_scale_by_load" --depth 1 https://github.com/mgencur/serving-1.git "$KNATIVE_SERVING_HOME"
   git describe --always --tags
 }
 
@@ -134,24 +134,24 @@ function run_knative_serving_rolling_upgrade_tests {
   local failed=0
   image_template="registry.svc.ci.openshift.org/openshift/knative-${knative_version}:knative-serving-test-{{.Name}}"
 
-  go_test_e2e -tags=preupgrade -timeout=20m ./test/upgrade \
-    --imagetemplate "$image_template" \
-    --kubeconfig "$KUBECONFIG" \
-    --resolvabledomain || return 1
+  # go_test_e2e -tags=preupgrade -timeout=20m ./test/upgrade \
+  #   --imagetemplate "$image_template" \
+  #   --kubeconfig "$KUBECONFIG" \
+  #   --resolvabledomain || return 1
 
-  logger.info "Starting prober test"
+  # logger.info "Starting prober test"
 
-  rm -f /tmp/prober-signal
-  go_test_e2e -tags=probe -timeout=20m ./test/upgrade \
-    --imagetemplate "$image_template" \
-    --kubeconfig "$KUBECONFIG" \
-    --resolvabledomain &
+  # rm -f /tmp/prober-signal
+  # go_test_e2e -tags=probe -timeout=20m ./test/upgrade \
+  #   --imagetemplate "$image_template" \
+  #   --kubeconfig "$KUBECONFIG" \
+  #   --resolvabledomain &
 
-  # Wait for the upgrade-probe kservice to be ready before proceeding
-  timeout 900 '[[ $(oc get services.serving.knative.dev upgrade-probe -n serving-tests -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") != True ]]' || return 1
+  # # Wait for the upgrade-probe kservice to be ready before proceeding
+  # timeout 900 '[[ $(oc get services.serving.knative.dev upgrade-probe -n serving-tests -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") != True ]]' || return 1
 
-  PROBER_PID=$!
-  echo "PROBER_PID is ${PROBER_PID}"
+  # PROBER_PID=$!
+  # echo "PROBER_PID is ${PROBER_PID}"
 
   rm -f /tmp/done-signal
   go_test_e2e -tags=performance -timeout=20m ./test/performance -run ^TestScaleRevisionByLoad$ \
@@ -163,65 +163,69 @@ function run_knative_serving_rolling_upgrade_tests {
 
   # wait for SCALE tests to start and scale up
   sleep 120
+  sleep 60
+  sleep 60
 
-  if [[ $UPGRADE_SERVERLESS == true ]]; then
-    local serving_version
-    serving_version=$(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}")
+  end_scale_test ${SCALE_PID}
 
-    # Get the current/latest CSV
-    local upgrade_to
-    upgrade_to=$(${rootdir}/hack/catalog.sh | grep currentCSV | awk '{ print $2 }')
+  # if [[ $UPGRADE_SERVERLESS == true ]]; then
+  #   local serving_version
+  #   serving_version=$(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}")
 
-    local cluster_version
-    cluster_version=$(oc get clusterversion -o=jsonpath="{.items[0].status.history[?(@.state==\"Completed\")].version}")
-    if [[ "$cluster_version" = 4.1.* || "${HOSTNAME}" = *ocp-41* ]]; then
-      if approve_csv "$upgrade_to" ; then # Upgrade should fail on OCP 4.1
-        return 1
-      fi
-      # Check we got RequirementsNotMet error
-      [[ $(oc get ClusterServiceVersion $upgrade_to -n $OPERATORS_NAMESPACE -o=jsonpath="{.status.requirementStatus[?(@.name==\"$upgrade_to\")].message}") =~ "requirement not met: minKubeVersion" ]] || return 1
-      # Check KnativeServing still has the old version
-      [[ $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") == "$serving_version" ]] || return 1
-    else
-      approve_csv "$upgrade_to" || return 1
-      # The knativeserving CR should be updated now
-      timeout 900 '[[ ! ( $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
-    fi
-    end_prober_test ${PROBER_PID}
-    end_scale_test ${SCALE_PID}
-  fi
+  #   # Get the current/latest CSV
+  #   local upgrade_to
+  #   upgrade_to=$(${rootdir}/hack/catalog.sh | grep currentCSV | awk '{ print $2 }')
 
-  # Might not work in OpenShift CI but we want it here so that we can consume this script later and re-use
-  if [[ $UPGRADE_CLUSTER == true ]]; then
-    # End the prober test now before we start cluster upgrade, up until now we should have zero failed requests
-    end_prober_test ${PROBER_PID}
+  #   local cluster_version
+  #   cluster_version=$(oc get clusterversion -o=jsonpath="{.items[0].status.history[?(@.state==\"Completed\")].version}")
+  #   if [[ "$cluster_version" = 4.1.* || "${HOSTNAME}" = *ocp-41* ]]; then
+  #     if approve_csv "$upgrade_to" ; then # Upgrade should fail on OCP 4.1
+  #       return 1
+  #     fi
+  #     # Check we got RequirementsNotMet error
+  #     [[ $(oc get ClusterServiceVersion $upgrade_to -n $OPERATORS_NAMESPACE -o=jsonpath="{.status.requirementStatus[?(@.name==\"$upgrade_to\")].message}") =~ "requirement not met: minKubeVersion" ]] || return 1
+  #     # Check KnativeServing still has the old version
+  #     [[ $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") == "$serving_version" ]] || return 1
+  #   else
+  #     approve_csv "$upgrade_to" || return 1
+  #     # The knativeserving CR should be updated now
+  #     timeout 900 '[[ ! ( $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
+  #   fi
+  #   end_prober_test ${PROBER_PID}
+  #   end_scale_test ${SCALE_PID}
+  # fi
 
-    local latest_cluster_version=$(oc adm upgrade | sed -ne '/VERSION/,$ p' | grep -v VERSION | awk '{print $1}')
-    [[ $latest_cluster_version != "" ]] || return 1
+  # # Might not work in OpenShift CI but we want it here so that we can consume this script later and re-use
+  # if [[ $UPGRADE_CLUSTER == true ]]; then
+  #   # End the prober test now before we start cluster upgrade, up until now we should have zero failed requests
+  #   end_prober_test ${PROBER_PID}
 
-    oc adm upgrade --to-latest=true
+  #   local latest_cluster_version=$(oc adm upgrade | sed -ne '/VERSION/,$ p' | grep -v VERSION | awk '{print $1}')
+  #   [[ $latest_cluster_version != "" ]] || return 1
 
-    timeout 7200 '[[ $(oc get clusterversion -o=jsonpath="{.items[0].status.history[?(@.version==\"${latest_cluster_version}\")].state}") != Completed ]]' || return 1
+  #   oc adm upgrade --to-latest=true
 
-    logger.info "New cluster version\n: $(oc get clusterversion)"
-  fi
+  #   timeout 7200 '[[ $(oc get clusterversion -o=jsonpath="{.items[0].status.history[?(@.version==\"${latest_cluster_version}\")].state}") != Completed ]]' || return 1
 
-  for kservice in `oc get ksvc -n serving-tests --no-headers -o name`; do
-    timeout 900 '[[ $(oc get $kservice -n serving-tests -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") != True ]]' || return 1
-  done
+  #   logger.info "New cluster version\n: $(oc get clusterversion)"
+  # fi
 
-  # Give time to settle things down
-  sleep 30
+  # for kservice in `oc get ksvc -n serving-tests --no-headers -o name`; do
+  #   timeout 900 '[[ $(oc get $kservice -n serving-tests -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") != True ]]' || return 1
+  # done
 
-  logger.info "Running postupgrade tests"
-  go_test_e2e -tags=postupgrade -timeout=20m ./test/upgrade \
-    --imagetemplate "$image_template" \
-    --kubeconfig "$KUBECONFIG" \
-    --resolvabledomain || return 1
+  # # Give time to settle things down
+  # sleep 30
 
-  oc delete ksvc pizzaplanet-upgrade-service scale-to-zero-upgrade-service upgrade-probe -n serving-tests
+  # logger.info "Running postupgrade tests"
+  # go_test_e2e -tags=postupgrade -timeout=20m ./test/upgrade \
+  #   --imagetemplate "$image_template" \
+  #   --kubeconfig "$KUBECONFIG" \
+  #   --resolvabledomain || return 1
 
-  remove_temporary_gopath
+  # oc delete ksvc pizzaplanet-upgrade-service scale-to-zero-upgrade-service upgrade-probe -n serving-tests
+
+  #remove_temporary_gopath
 
   return 0
   )
