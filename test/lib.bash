@@ -188,7 +188,8 @@ function run_knative_serving_rolling_upgrade_tests {
   rm -f /tmp/done-signal
   go_test_e2e -tags=performance -timeout=20m ./test/performance -run ^TestScaleRevisionByLoad$ \
     --imagetemplate "$image_template" \
-    --kubeconfig "$KUBECONFIG" &
+    --kubeconfig "$KUBECONFIG" \
+    --resolvabledomain &
 
   SCALE_PID=$!
   echo "SCALE_PID is ${SCALE_PID}"
