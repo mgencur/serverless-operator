@@ -230,8 +230,13 @@ function run_knative_serving_rolling_upgrade_tests {
       # Assert that the old image references eventually fade away
       timeout 900 "oc get pod -n $SERVING_NAMESPACE -o yaml | grep image: | uniq | grep $serving_version" || return 1
     fi
+
+    sleep 180
+
     end_prober_test ${PROBER_PID}
     end_scale_test ${SCALE_PID}
+
+    sleep 30
   fi
 
   # Might not work in OpenShift CI but we want it here so that we can consume this script later and re-use
