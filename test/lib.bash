@@ -188,8 +188,13 @@ function run_knative_serving_rolling_upgrade_tests {
       # The knativeserving CR should be updated now
       timeout 900 '[[ ! ( $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
     fi
+
+    sleep 180
+
     end_prober_test ${PROBER_PID}
     end_scale_test ${SCALE_PID}
+
+    sleep 30
   fi
 
   # Might not work in OpenShift CI but we want it here so that we can consume this script later and re-use
