@@ -231,7 +231,13 @@ function run_knative_serving_rolling_upgrade_tests {
       timeout 900 "oc get pod -n $SERVING_NAMESPACE -o yaml | grep image: | uniq | grep $serving_version" || return 1
     fi
 
+    echo "Upgrade finished at $(date)"
+
+    oc get pods -n serving-tests
+
     sleep 180
+
+    oc get pods -n serving-tests
 
     end_prober_test ${PROBER_PID}
     end_scale_test ${SCALE_PID}
