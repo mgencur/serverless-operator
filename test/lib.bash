@@ -189,7 +189,13 @@ function run_knative_serving_rolling_upgrade_tests {
       timeout 900 '[[ ! ( $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
     fi
 
+    echo "Upgrade finished at $(date)"
+
+    oc get pods -n serving-tests
+
     sleep 180
+
+    oc get pods -n serving-tests
 
     end_prober_test ${PROBER_PID}
     end_scale_test ${SCALE_PID}
