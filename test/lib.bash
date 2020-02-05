@@ -33,8 +33,11 @@ function run_e2e_tests {
   logger.info "Running tests"
   kubeconfigs+=("${KUBECONFIG}")
   for cfg in user*.kubeconfig; do
+    echo "PWD:======== $(pwd)"
+    echo "PWD:======== $(pwd)/${cfg}"
     kubeconfigs+=("$(pwd)/${cfg}")
   done
+  echo "KUBECONFIGS:==== ${kubeconfigs[@]}"
   kubeconfigs_str="$(array.join , "${kubeconfigs[@]}")"
 
   go_test_e2e -tags=e2e -timeout=30m -parallel=1 ./test/e2e \
