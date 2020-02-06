@@ -177,14 +177,13 @@ function run_knative_serving_rolling_upgrade_tests {
       timeout 900 '[[ ! ( $(oc get knativeserving.serving.knative.dev knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving.serving.knative.dev knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
       timeout 900 '[[ ! ( $(oc get knativeserving.operator.knative.dev knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.version}") != $serving_version && $(oc get knativeserving.operator.knative.dev knative-serving -n $SERVING_NAMESPACE -o=jsonpath="{.status.conditions[?(@.type==\"Ready\")].status}") == True ) ]]' || return 1
     fi
-    end_prober_test ${PROBER_PID}
   fi
+
+  # End the prober test now before we start cluster upgrade, up until now we should have zero failed requests
+  end_prober_test ${PROBER_PID}
 
   # Might not work in OpenShift CI but we want it here so that we can consume this script later and re-use
   if [[ $UPGRADE_CLUSTER == true ]]; then
-    # End the prober test now before we start cluster upgrade, up until now we should have zero failed requests
-    end_prober_test ${PROBER_PID}
-
     local latest_cluster_version=$(oc adm upgrade | sed -ne '/VERSION/,$ p' | grep -v VERSION | awk '{print $1}' | sort -r | head -n 1)
     [[ $latest_cluster_version != "" ]] || return 1
 
