@@ -74,7 +74,7 @@ function checkout_knative_serving {
   # Checkout the relevant code to run
   export KNATIVE_SERVING_HOME="$GOPATH/src/knative.dev/serving"
   mkdir -p "$KNATIVE_SERVING_HOME"
-  git clone -b "release-${knative_version}" --depth 1 https://github.com/openshift/knative-serving.git "$KNATIVE_SERVING_HOME"
+  git clone -b "release-${knative_version}" --depth 1 https://github.com/mgencur/serving-1.git "$KNATIVE_SERVING_HOME"
   git describe --always --tags
 }
 
