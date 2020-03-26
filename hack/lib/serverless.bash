@@ -83,6 +83,8 @@ function approve_csv {
   local csv_version install_plan
   csv_version=$1
 
+  switch_channel_and_source_for_subscription "serverless-operator" "preview-4.3" "serverless-operator"
+
   # Wait for the installplan to be available
   timeout 900 "[[ -z \$(find_install_plan $csv_version) ]]" || return 1
 
@@ -93,6 +95,19 @@ function approve_csv {
     oc get ClusterServiceVersion "$csv_version" -n "${OPERATORS_NAMESPACE}" -o yaml || true
     return 1
   fi
+}
+
+function switch_channel_and_source_for_subscription {
+  local subscription channel source
+  subscription=$1
+  channel=$2
+  source=$3
+
+  oc get subscription "${subscription}" -n "${OPERATORS_NAMESPACE}" -oyaml | \
+    sed -e "s/\(.*channel:\).*/\1 ${channel}/" \
+        -e "s/\(.*source:\).*/\1 ${source}/" \
+        -e "/startingCSV/d" | \
+    oc replace -f -
 }
 
 function find_install_plan {
