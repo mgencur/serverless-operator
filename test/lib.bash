@@ -188,7 +188,7 @@ function run_knative_serving_rolling_upgrade_tests {
 
     # Get latest CSV from the given channel
     local upgrade_to
-    upgrade_to=$("${rootdir}/hack/catalog.sh" | sed -n '/channels/,$p;' | sed -n "/- name: ${CHANNEL}$/{n;p;}" | awk '{ print $2 }')
+    upgrade_to=$("${rootdir}/hack/catalog.sh" | sed -n '/channels/,$p;' | sed -n "/- name: preview-4.3$/{n;p;}" | awk '{ print $2 }')
 
     local cluster_version
     cluster_version=$(oc get clusterversion -o=jsonpath="{.items[0].status.history[?(@.state==\"Completed\")].version}")
