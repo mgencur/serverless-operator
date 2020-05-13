@@ -35,7 +35,7 @@ failed=0
 # Run knative serving additional e2e tests
 (( !failed )) && downstream_serving_e2e_tests || failed=5
 
-(( !failed )) && upstream_knative_serving_e2e_and_conformance_tests || failed=16
+#(( !failed )) && upstream_knative_serving_e2e_and_conformance_tests || failed=16
 (( !failed )) && knative_eventing_tests || failed=17
 
 (( failed )) && dump_state
