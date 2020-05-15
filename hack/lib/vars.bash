@@ -12,6 +12,8 @@ fi
 source "$(dirname "${BASH_SOURCE[0]}")/../../test/vendor/knative.dev/test-infra/scripts/e2e-tests.sh"
 
 readonly KNATIVE_SERVING_VERSION="${KNATIVE_SERVING_VERSION:-v0.13.2}"
+# KNATIVE_SEVING_HOME is filled with Knative Serving sources by ci-operator
+readonly KNATIVE_SERVING_HOME="${GOPATH}/src/knative.dev/serving"
 readonly KNATIVE_SERVING_OPERATOR_VERSION="${KNATIVE_SERVING_OPERATOR_VERSION:-v0.13.2}"
 readonly KNATIVE_EVENTING_VERSION="${KNATIVE_EVENTING_VERSION:-v0.13.0}"
 readonly KNATIVE_EVENTING_OPERATOR_VERSION="${KNATIVE_EVENTING_OPERATOR_VERSION:-0.13.2}"
