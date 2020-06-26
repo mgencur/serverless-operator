@@ -8,13 +8,15 @@ export PERIODICS=${PERIODICS:-false}
 tests=$(go test -tags=e2e  \
         ./test/e2e ./test/conformance/api/... ./test/conformance/runtime/...  \
         --kubeconfig /dev/null | \
-        grep "^--- FAIL:" | awk -F "FAIL: " '{ print $2}' | awk '{ print $1 }')
+        grep "^--- FAIL:" | awk -F "FAIL: " '{ print $2}' | awk '{ print $1 }' | sort | uniq)
+
+echo $tests
 
 # Eventing
 # tests=$(go test -tags=e2e  \
 #         ./test/e2e  \
 #         --kubeconfig /dev/null | \
-#         grep "^--- FAIL:" | awk -F "FAIL: " '{ print $2}' | awk '{ print $1 }')
+#         grep "^--- FAIL:" | awk -F "FAIL: " '{ print $2}' | awk '{ print $1 }' | sort | uniq)
 
 for ocp in "4.3" "4.4" "4.5"; do
 
@@ -28,7 +30,7 @@ for ocp in "4.3" "4.4" "4.5"; do
   echo "=== OCP ${ocp} ==="
 
   for test in $tests; do
-    stats=$(curl -s "https://search.apps.build01.ci.devcluster.openshift.com/?search=${test}&maxAge=168h&context=2&type=junit&name=${jobname}&maxMatches=1&maxBytes=20971520&groupBy=job" | grep "Across" | awk -F "em" '{ print $3 }' | awk -F ">" '{ print $2 }' | awk -F "<" '{ print $1 }' | awk -F "and 100.00%" '{ print $1 }')
+    stats=$(curl -s "https://search.apps.build01.ci.devcluster.openshift.com/?search=${test}&maxAge=168h&context=2&type=junit&name=${jobname}&maxMatches=3&maxBytes=20971520&groupBy=job" | grep "Across" | awk -F "em" '{ print $3 }' | awk -F ">" '{ print $2 }' | awk -F "<" '{ print $1 }' | awk -F "and 100.00%" '{ print $1 }')
     if [[ -n "$stats" ]]; then
       echo "$test: $stats"
     fi
