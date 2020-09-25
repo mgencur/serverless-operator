@@ -42,7 +42,7 @@ function remove_installplan {
 }
 
 function install_serverless_latest {
-  deploy_serverless_operator_latest || return $?
+  #deploy_serverless_operator_latest || return $?
   deploy_knativeserving_cr || return $?
   deploy_knativeeventing_cr || return $?
 }
@@ -168,13 +168,13 @@ function teardown_serverless {
   logger.info 'Ensure no knative eventing pods running'
   timeout 600 "[[ \$(oc get pods -n ${EVENTING_NAMESPACE} --field-selector=status.phase!=Succeeded -o jsonpath='{.items}') != '[]' ]]" || return 9
 
-  oc delete subscriptions.operators.coreos.com -n "${OPERATORS_NAMESPACE}" "${OPERATOR}" 2>/dev/null
-  for ip in $(oc get installplan -n "${OPERATORS_NAMESPACE}" | grep serverless-operator | cut -f1 -d' '); do
-    oc delete installplan -n "${OPERATORS_NAMESPACE}" $ip
-  done
-  for csv in $(oc get csv -n "${OPERATORS_NAMESPACE}" | grep serverless-operator | cut -f1 -d' '); do
-    oc delete csv -n "${OPERATORS_NAMESPACE}" "${csv}"
-  done
+#  oc delete subscriptions.operators.coreos.com -n "${OPERATORS_NAMESPACE}" "${OPERATOR}" 2>/dev/null
+#  for ip in $(oc get installplan -n "${OPERATORS_NAMESPACE}" | grep serverless-operator | cut -f1 -d' '); do
+#    oc delete installplan -n "${OPERATORS_NAMESPACE}" $ip
+#  done
+#  for csv in $(oc get csv -n "${OPERATORS_NAMESPACE}" | grep serverless-operator | cut -f1 -d' '); do
+#    oc delete csv -n "${OPERATORS_NAMESPACE}" "${csv}"
+#  done
   logger.success 'Serverless has been uninstalled.'
 }
 

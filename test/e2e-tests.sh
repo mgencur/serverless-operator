@@ -11,17 +11,19 @@ if [ -n "$OPENSHIFT_CI" ]; then
 fi
 debugging.setup
 
+oc get ClusterServiceVersion serverless-operator.v1.10.0 -n openshift-serverless -o yaml
+
 scale_up_workers || exit $?
 create_namespaces || exit $?
 create_htpasswd_users && add_roles || exit $?
 
 failed=0
 
-(( !failed )) && install_catalogsource || failed=1
+#(( !failed )) && install_catalogsource || failed=1
 (( !failed )) && logger.success '🚀 Cluster prepared for testing.'
 
 # Run serverless-operator specific tests.
-(( !failed )) && serverless_operator_e2e_tests || failed=2
+#(( !failed )) && serverless_operator_e2e_tests || failed=2
 (( !failed )) && ensure_serverless_installed || failed=3
 # Run Knative Serving downstream E2E tests.
 (( !failed )) && downstream_serving_e2e_tests || failed=4

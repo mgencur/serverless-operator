@@ -24,11 +24,7 @@ function install_catalogsource {
   # Create a backup of the CSV so we don't pollute the repository.
   cp "$csv" "${rootdir}/bkp.yaml"
 
-  if [ -n "$OPENSHIFT_CI" ]; then
-    # Image variables supplied by ci-operator.
-    sed -i "s,image: .*openshift-serverless-.*:knative-operator,image: ${KNATIVE_OPERATOR}," "$csv"
-    sed -i "s,image: .*openshift-serverless-.*:knative-openshift-ingress,image: ${KNATIVE_OPENSHIFT_INGRESS}," "$csv"
-  elif [ -n "$DOCKER_REPO_OVERRIDE" ]; then
+  if [ -n "$DOCKER_REPO_OVERRIDE" ]; then
     sed -i "s,image: .*openshift-serverless-.*:knative-operator,image: ${DOCKER_REPO_OVERRIDE}/knative-operator," "$csv"
     sed -i "s,image: .*openshift-serverless-.*:knative-openshift-ingress,image: ${DOCKER_REPO_OVERRIDE}/knative-openshift-ingress," "$csv"
   fi
