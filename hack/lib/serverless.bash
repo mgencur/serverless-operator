@@ -242,7 +242,7 @@ spec:
     enabled: true
     bootstrapServers: my-cluster-kafka-bootstrap.kafka:9093
     authSecretNamespace: default
-    authSecretName: strimzi-tls-secret
+    authSecretName: my-tls-secret
 EOF
 
   # shellcheck disable=SC2016
@@ -268,7 +268,7 @@ spec:
     enabled: true
     bootstrapServers: my-cluster-kafka-bootstrap.kafka:9094
     authSecretNamespace: default
-    authSecretName: strimzi-sasl-secret
+    authSecretName: my-sasl-secret
 EOF
 
   # shellcheck disable=SC2016
