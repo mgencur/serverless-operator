@@ -47,6 +47,7 @@ function go_test_e2e {
     [[ -n "$arg" ]] && go_test_args+=("$arg")
   done
   set +Eeuo pipefail
+  IS_PROW=0 #Try archiving the test results if increasing verbosity doesn't help
   report_go_test -race -count=1 "${go_test_args[@]}"
   retcode=$?
   set -Eeuo pipefail
@@ -197,6 +198,8 @@ function run_rolling_upgrade_tests {
   image_version=$(versions.major_minor "${KNATIVE_SERVING_VERSION}")
   image_template="quay.io/openshift-knative/{{.Name}}:v${image_version}"
   channels=messaging.knative.dev/v1beta1:KafkaChannel,messaging.knative.dev/v1:InMemoryChannel
+
+  export GO_TEST_VERBOSITY=standard-verbose # increased test verbosity from default "testname"
 
   # Test configuration. See https://github.com/knative/eventing/tree/master/test/upgrade#probe-test-configuration
   # TODO(ksuszyns): remove E2E_UPGRADE_TESTS_SERVING_SCALETOZERO when knative/operator#297 is fixed.
