@@ -46,7 +46,7 @@ func TestServerlessUpgrade(t *testing.T) {
 				// TODO: SRVKS-698 Investigate AutoscaleSustainingWithTBCTest flakiness and re-enable.
 				//servingupgrade.ProbeTest(),
 				//servingupgrade.AutoscaleSustainingTest(),
-				//eventingupgrade.ContinualTest(),
+				eventingupgrade.ContinualTest(),
 				kafkaupgrade.ChannelContinualTest(),
 				//kafkaupgrade.SourceContinualTest(),
 			},

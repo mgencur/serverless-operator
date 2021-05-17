@@ -56,9 +56,9 @@ func ChannelContinualTest() pkgupgrade.BackgroundOperation {
 	}
 	verify := func(c pkgupgrade.Context) {
 		// verify
-		//if client != nil {
-		//	defer testlib.TearDown(client)
-		//}
+		if client != nil {
+			defer testlib.TearDown(client)
+		}
 		if probe != nil {
 			prober.AssertEventProber(ctx, c.T, probe)
 		}
