@@ -40,15 +40,15 @@ func TestServerlessUpgrade(t *testing.T) {
 	cfg := newUpgradeConfig(t)
 	suite := pkgupgrade.Suite{
 		Tests: pkgupgrade.Tests{
-			PreUpgrade:  nil, //preUpgradeTests(),
-			PostUpgrade: nil, //postUpgradeTests(ctx),
+			PreUpgrade:  preUpgradeTests(),
+			PostUpgrade: postUpgradeTests(ctx),
 			Continual: []pkgupgrade.BackgroundOperation{
-				//servingupgrade.ProbeTest(),
-				//servingupgrade.AutoscaleSustainingWithTBCTest(),
-				//servingupgrade.AutoscaleSustainingTest(),
+				servingupgrade.ProbeTest(),
+				servingupgrade.AutoscaleSustainingWithTBCTest(),
+				servingupgrade.AutoscaleSustainingTest(),
 				eventingupgrade.ContinualTest(),
 				kafkaupgrade.ChannelContinualTest(),
-				//kafkaupgrade.SourceContinualTest(),
+				kafkaupgrade.SourceContinualTest(),
 			},
 		},
 		Installations: pkgupgrade.Installations{
