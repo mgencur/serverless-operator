@@ -47,7 +47,7 @@ func TestServerlessUpgrade(t *testing.T) {
 				//servingupgrade.AutoscaleSustainingWithTBCTest(),
 				//servingupgrade.AutoscaleSustainingTest(),
 				eventingupgrade.ContinualTest(),
-				//kafkaupgrade.ChannelContinualTest(),
+				kafkaupgrade.ChannelContinualTest(),
 				//kafkaupgrade.SourceContinualTest(),
 			},
 		},
