@@ -37,7 +37,7 @@ func ContinualTest() pkgupgrade.BackgroundOperation {
 		},
 		func(c pkgupgrade.Context) {
 			// verify
-			defer testlib.TearDown(client)
+			//defer testlib.TearDown(client)
 			prober.AssertEventProber(ctx, c.T, probe)
 		},
 	)
