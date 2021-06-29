@@ -79,7 +79,7 @@ func AutoscaleSustainingWithTBCTest() pkgupgrade.BackgroundOperation {
 			wait = e2e.AutoscaleUpToNumPods(ctx, curPods, targetPods, stopCh, false /* quick */)
 		},
 		func(c pkgupgrade.Context) {
-			test.EnsureTearDown(c.T, ctx.Clients(), ctx.Names())
+			//test.EnsureTearDown(c.T, ctx.Clients(), ctx.Names())
 			// Verification is done inside e2e.AssertAutoscaleUpToNumPods.
 			// We're just giving it a signal.
 			close(stopCh)

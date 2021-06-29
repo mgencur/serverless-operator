@@ -23,8 +23,6 @@ import (
 
 	"github.com/openshift-knative/serverless-operator/test"
 	"github.com/openshift-knative/serverless-operator/test/upgrade/installation"
-	"knative.dev/eventing-kafka/test/upgrade/continual"
-
 	"go.uber.org/zap"
 	kafkaupgrade "knative.dev/eventing-kafka/test/upgrade"
 	eventingupgrade "knative.dev/eventing/test/upgrade"
@@ -42,18 +40,17 @@ func TestServerlessUpgrade(t *testing.T) {
 	cfg := newUpgradeConfig(t)
 	suite := pkgupgrade.Suite{
 		Tests: pkgupgrade.Tests{
-			PreUpgrade:  preUpgradeTests(),
-			PostUpgrade: postUpgradeTests(ctx),
-			Continual: merge(
+			PreUpgrade:  nil,
+			PostUpgrade: nil,
+			Continual:
 				[]pkgupgrade.BackgroundOperation{
-					servingupgrade.ProbeTest(),
+					//servingupgrade.ProbeTest(),
 					servingupgrade.AutoscaleSustainingWithTBCTest(),
-					servingupgrade.AutoscaleSustainingTest(),
-					eventingupgrade.ContinualTest(),
+					//servingupgrade.AutoscaleSustainingTest(),
+					//eventingupgrade.ContinualTest(),
 				},
-				kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
-				kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
-			),
+				//kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
+				//kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
 		},
 		Installations: pkgupgrade.Installations{
 			UpgradeWith: []pkgupgrade.Operation{
