@@ -44,13 +44,13 @@ func TestServerlessUpgrade(t *testing.T) {
 			PostUpgrade: nil,
 			Continual:
 				[]pkgupgrade.BackgroundOperation{
-					//servingupgrade.ProbeTest(),
+					servingupgrade.ProbeTest(),
 					servingupgrade.AutoscaleSustainingWithTBCTest(),
-					//servingupgrade.AutoscaleSustainingTest(),
-					//eventingupgrade.ContinualTest(),
+					servingupgrade.AutoscaleSustainingTest(),
+					eventingupgrade.ContinualTest(),
 				},
-				//kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
-				//kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
+				kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
+				kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
 		},
 		Installations: pkgupgrade.Installations{
 			UpgradeWith: []pkgupgrade.Operation{
