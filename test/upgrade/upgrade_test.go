@@ -23,6 +23,7 @@ import (
 
 	"github.com/openshift-knative/serverless-operator/test"
 	"github.com/openshift-knative/serverless-operator/test/upgrade/installation"
+	"knative.dev/eventing-kafka/test/upgrade/continual"
 	"go.uber.org/zap"
 	kafkaupgrade "knative.dev/eventing-kafka/test/upgrade"
 	eventingupgrade "knative.dev/eventing/test/upgrade"
