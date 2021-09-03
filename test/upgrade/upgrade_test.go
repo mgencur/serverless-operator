@@ -23,8 +23,6 @@ import (
 
 	"github.com/openshift-knative/serverless-operator/test"
 	"github.com/openshift-knative/serverless-operator/test/upgrade/installation"
-	"knative.dev/eventing-kafka/test/upgrade/continual"
-
 	"go.uber.org/zap"
 	kafkaupgrade "knative.dev/eventing-kafka/test/upgrade"
 	eventingupgrade "knative.dev/eventing/test/upgrade"
@@ -42,18 +40,18 @@ func TestServerlessUpgrade(t *testing.T) {
 	cfg := newUpgradeConfig(t)
 	suite := pkgupgrade.Suite{
 		Tests: pkgupgrade.Tests{
-			PreUpgrade:  preUpgradeTests(),
+			PreUpgrade:  nil, //preUpgradeTests(),
 			PostUpgrade: postUpgradeTests(ctx),
-			Continual: merge(
-				[]pkgupgrade.BackgroundOperation{
-					servingupgrade.ProbeTest(),
-					servingupgrade.AutoscaleSustainingWithTBCTest(),
-					servingupgrade.AutoscaleSustainingTest(),
-					eventingupgrade.ContinualTest(),
-				},
-				kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
-				kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
-			),
+			//Continual: merge(
+			//	[]pkgupgrade.BackgroundOperation{
+			//		servingupgrade.ProbeTest(),
+			//		servingupgrade.AutoscaleSustainingWithTBCTest(),
+			//		servingupgrade.AutoscaleSustainingTest(),
+			//		eventingupgrade.ContinualTest(),
+			//	},
+			//	kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
+			//	kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
+			//),
 		},
 		Installations: pkgupgrade.Installations{
 			UpgradeWith: []pkgupgrade.Operation{
@@ -124,11 +122,12 @@ func preUpgradeTests() []pkgupgrade.Operation {
 func postUpgradeTests(ctx *test.Context) []pkgupgrade.Operation {
 	tests := []pkgupgrade.Operation{
 		waitForServicesReady(ctx),
-		eventingupgrade.PostUpgradeTest(),
-		kafkaupgrade.ChannelPostUpgradeTest(),
-		kafkaupgrade.SourcePostUpgradeTest(),
+		//eventingupgrade.PostUpgradeTest(),
+		eventingupgrade.PostUpgradeCRDTest(),
+		//kafkaupgrade.ChannelPostUpgradeTest(),
+		//kafkaupgrade.SourcePostUpgradeTest(),
 	}
-	tests = append(tests, servingupgrade.ServingPostUpgradeTests()...)
+	//tests = append(tests, servingupgrade.ServingPostUpgradeTests()...)
 	return tests
 }
 

@@ -17,11 +17,26 @@ limitations under the License.
 package upgrade
 
 import (
+	"context"
+
+	testlib "knative.dev/eventing/test/lib"
 	pkgupgrade "knative.dev/pkg/test/upgrade"
+	"knative.dev/pkg/test/migrate"
 )
 
 func PostUpgradeTest() pkgupgrade.Operation {
 	return pkgupgrade.NewOperation("EventingPostUpgradeTest", func(c pkgupgrade.Context) {
 		runSmokeTest(c.T)
+	})
+}
+
+func PostUpgradeCRDTest() pkgupgrade.Operation {
+	return pkgupgrade.NewOperation("EventingPostUpgradeTest", func(c pkgupgrade.Context) {
+		client := testlib.Setup(c.T, true)
+		defer testlib.TearDown(client)
+		if err := migrate.CheckStoredVersions(context.Background(), client.Apiextensions,
+			"apiserversources.sources.knative.dev"); err != nil {
+				c.T.Fatal("Failed to migrate CRD: ", err)
+		}
 	})
 }
