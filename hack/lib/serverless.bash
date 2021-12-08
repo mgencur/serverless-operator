@@ -374,7 +374,7 @@ function teardown_serverless {
   if oc get namespace "${SERVING_NAMESPACE}" &>/dev/null; then
     oc delete namespace "${SERVING_NAMESPACE}"
   fi
-  logger.info 'Ensure ingress namespace not  pods running'
+  logger.info 'Ensure no ingress pods running'
   timeout 600 "[[ \$(oc get pods -n ${INGRESS_NAMESPACE} --field-selector=status.phase!=Succeeded -o jsonpath='{.items}') != '[]' ]]"
   timeout 600 "[[ \$(oc get ns ${INGRESS_NAMESPACE} --no-headers | wc -l) == 1 ]]"
   # KnativeKafka must be deleted before KnativeEventing due to https://issues.redhat.com/browse/SRVKE-667
@@ -397,7 +397,7 @@ function teardown_serverless {
   oc delete subscriptions.operators.coreos.com \
     -n "${OPERATORS_NAMESPACE}" "${OPERATOR}" \
     --ignore-not-found
-  logger.info 'Deleting CSVs'
+  logger.info 'Deleting ClusterServiceVersion'
   for csv in $(set +o pipefail && oc get csv -n "${OPERATORS_NAMESPACE}" --no-headers 2>/dev/null \
       | grep "${OPERATOR}" | cut -f1 -d' '); do
     oc delete csv -n "${OPERATORS_NAMESPACE}" "${csv}"
