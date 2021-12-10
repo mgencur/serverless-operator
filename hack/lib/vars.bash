@@ -30,7 +30,11 @@ export KNATIVE_EVENTING_KAFKA_HOME="${GOPATH}/src/knative.dev/eventing-kafka"
 
 export DOCKER_REPO_OVERRIDE="${DOCKER_REPO_OVERRIDE:-}"
 export INTERACTIVE="${INTERACTIVE:-$(test -z "${GDMSESSION}"; echo $?)}"
-export KUBECONFIG="${KUBECONFIG:-$(realpath ~/.kube/config)}"
+KUBECONFIG="${KUBECONFIG:-$(realpath ~/.kube/config)}"
+# For running within container where KUBECONFIG is not defined but
+# test scripts need it. The in-container kube client will fallback
+# to using the default mounted service account.
+export KUBECONFIG="${KUBECONFIG:-/fake/.kube/config)}"
 export OPENSHIFT_CI="${OPENSHIFT_CI:-}"
 export OPERATOR="${OPERATOR:-serverless-operator}"
 
