@@ -31,6 +31,9 @@ fi
 
 # Run upstream knative serving, eventing and eventing-kafka tests
 if [[ $TEST_KNATIVE_E2E == true ]]; then
+  # Upstream E2E require KUBECONFIG to be defined.
+  # TODO: Remove this when upstream tests can use in-cluster config.
+  ensure_kubeconfig
   if [[ $TEST_KNATIVE_KAFKA == true ]]; then
     upstream_knative_eventing_kafka_e2e
   fi

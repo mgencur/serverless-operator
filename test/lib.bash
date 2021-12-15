@@ -336,9 +336,12 @@ function add_roles {
   oc adm policy add-role-to-user view user3 -n "$TEST_NAMESPACE"
 }
 
-function create_cluster_admin {
-  add_user "kubeadmin" "kubeadmin"
-  oc adm policy add-cluster-role-to-user cluster-admin kubeadmin
+function ensure_kubeconfig {
+  if [[ -z "$KUBECONFIG" ]]; then
+    add_user "kubeadmin" "kubeadmin"
+    oc adm policy add-cluster-role-to-user cluster-admin kubeadmin
+    export KUBECONFIG="$(pwd)/kubeadmin.kubeconfig"
+  fi
 }
 
 function delete_users {

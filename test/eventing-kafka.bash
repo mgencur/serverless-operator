@@ -28,13 +28,6 @@ function upstream_knative_eventing_kafka_e2e {
   # shellcheck disable=SC1091
   source "${KNATIVE_EVENTING_KAFKA_HOME}/openshift/e2e-common.sh"
 
-  # Eventing E2E require the KUBECONFIG.
-  # TODO: Remove this when upstream tests can use in-cluster config.
-  if [[ -z "$KUBECONFIG" ]]; then
-    create_cluster_admin
-    KUBECONFIG="$(pwd)/kubeadmin.kubeconfig"
-  fi
-
   # run_e2e_tests defined in eventing-kafka
   logger.info 'Starting eventing-kafka tests'
   run_e2e_tests

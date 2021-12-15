@@ -169,9 +169,11 @@ function delete_catalog_source {
 }
 
 function add_user {
-  local name pass occmd
+  local name pass occmd rootdir
   name=${1:?Pass a username as arg[1]}
   pass=${2:?Pass a password as arg[2]}
+
+  rootdir="$(dirname "$(dirname "$(dirname "$(realpath "${BASH_SOURCE[0]}")")")")"
 
   logger.info "Creating user $name:***"
   if oc get secret htpass-secret -n openshift-config -o jsonpath='{.data.htpasswd}' 2>/dev/null | base64 -d > users.htpasswd; then
@@ -190,9 +192,9 @@ function add_user {
     --dry-run=client -o yaml | oc apply -f -
 
   if oc get oauth.config.openshift.io cluster &>/dev/null; then
-    oc replace -f openshift/identity/htpasswd.yaml
+    oc replace -f "${rootdir}/openshift/identity/htpasswd.yaml"
   else
-    oc apply -f openshift/identity/htpasswd.yaml
+    oc apply -f "${rootdir}/openshift/identity/htpasswd.yaml"
   fi
 
   logger.debug 'Generate kubeconfig'
