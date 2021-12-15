@@ -7,3 +7,4 @@ COPY . .
 
 COPY test_runner.go /go/src/knative.dev/eventing/test/lib/
 COPY client.go /go/src/knative.dev/eventing/test/lib/
+COPY e2e-common.sh /go/src/knative.dev/eventing/openshift/
