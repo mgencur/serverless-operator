@@ -37,8 +37,8 @@ if [[ $TEST_KNATIVE_E2E == true ]]; then
 #  if [[ $TEST_KNATIVE_KAFKA == true ]]; then
 #    upstream_knative_eventing_kafka_e2e
 #  fi
-  upstream_knative_serving_e2e_and_conformance_tests
-#  upstream_knative_eventing_e2e
+#  upstream_knative_serving_e2e_and_conformance_tests
+  upstream_knative_eventing_e2e
 fi
 
 [ -n "$OPENSHIFT_CI" ] && check_serverless_alerts
