@@ -110,7 +110,8 @@ test-upstream-e2e-no-upgrade-testonly:
 
 test-upstream-e2e-no-upgrade:
 	UNINSTALL_STRIMZI="false" ./hack/strimzi.sh
-	INSTALL_KAFKA="true" ./hack/install.sh
+	./hack/tracing.sh
+	INSTALL_KAFKA="true" ENABLE_TRACING="true" ./hack/install.sh
 	TEST_KNATIVE_KAFKA=true TEST_KNATIVE_E2E=true TEST_KNATIVE_UPGRADE=false ./test/upstream-e2e-tests.sh
 
 # Run only upstream upgrade tests.
@@ -119,7 +120,8 @@ test-upstream-upgrade-testonly:
 
 test-upstream-upgrade:
 	UNINSTALL_STRIMZI="false" ./hack/strimzi.sh
-	INSTALL_PREVIOUS_VERSION="true" INSTALL_KAFKA="true" ./hack/install.sh
+	./hack/tracing.sh
+	INSTALL_PREVIOUS_VERSION="true" INSTALL_KAFKA="true" ENABLE_TRACING="true" ./hack/install.sh
 	TEST_KNATIVE_KAFKA=true TEST_KNATIVE_E2E=false TEST_KNATIVE_UPGRADE=true ./test/upstream-e2e-tests.sh
 
 # Alias.

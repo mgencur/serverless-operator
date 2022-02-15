@@ -1,11 +1,6 @@
 #!/usr/bin/env bash
 
 function install_tracing {
-  deploy_zipkin
-  enable_eventing_tracing
-}
-
-function deploy_zipkin {
   logger.info "Installing Zipkin in namespace ${ZIPKIN_NAMESPACE}"
   cat <<EOF | oc apply -f -
 apiVersion: v1
@@ -63,23 +58,16 @@ EOF
 
 function enable_eventing_tracing {
   logger.info "Configuring tracing for Eventing"
+  oc -n "${EVENTING_NAMESPACE}" patch knativeeventing/knative-eventing --type=merge --patch='{"spec": {"config": { "tracing": {"enable":"true","backend":"zipkin", "zipkin-endpoint":"http://zipkin.'${ZIPKIN_NAMESPACE}'.svc.cluster.local:9411/api/v2/spans", "debug":"true", "sample-rate":"1.0"}}}}'
+}
 
-  cat <<EOF | oc apply -f -
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: config-tracing
-  namespace: ${EVENTING_NAMESPACE}
-data:
-  enable: "true"
-  zipkin-endpoint: "http://zipkin.${ZIPKIN_NAMESPACE}.svc.cluster.local:9411/api/v2/spans"
-  sample-rate: "1.0"
-  debug: "true"
-EOF
+function enable_serving_tracing {
+  logger.info "Configuring tracing for Serving"
+  oc -n "${SERVING_NAMESPACE}" patch knativeserving/knative-serving --type=merge --patch='{"spec": {"config": { "tracing": {"enable":"true","backend":"zipkin", "zipkin-endpoint":"http://zipkin.'${ZIPKIN_NAMESPACE}'.svc.cluster.local:9411/api/v2/spans", "debug":"true", "sample-rate":"1.0"}}}}'
 }
 
 function teardown_tracing {
-  logger.warn 'Teardown tracing'
+  logger.warn 'Teardown Zipkin'
 
   oc delete service    -n "${ZIPKIN_NAMESPACE}" zipkin --ignore-not-found
   oc delete deployment -n "${ZIPKIN_NAMESPACE}" zipkin --ignore-not-found
