@@ -155,7 +155,7 @@ function deploy_knativeserving_cr {
     deploy_with_kourier
   fi
 
-  if [[ ENABLE_TRACING == "true" ]]; then
+  if [[ $ENABLE_TRACING == "true" ]]; then
     enable_serving_tracing
   fi
 
@@ -224,7 +224,7 @@ spec:
       loglevel.mt-broker-controller: "debug"
 EOF
 
-  if [[ ENABLE_TRACING == "true" ]]; then
+  if [[ $ENABLE_TRACING == "true" ]]; then
     enable_eventing_tracing
   fi
 
