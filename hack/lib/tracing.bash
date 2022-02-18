@@ -46,9 +46,9 @@ spec:
               fieldPath: metadata.namespace
         resources:
           limits:
-            memory: 1000Mi
+            memory: 4000Mi
           requests:
-            memory: 256Mi
+            memory: 1000Mi
 ---
 EOF
 
