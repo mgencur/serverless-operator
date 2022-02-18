@@ -215,6 +215,8 @@ function run_rolling_upgrade_tests {
     go_test_e2e -run=TestServerlessUpgrade -timeout=30m "${common_opts[@]}"
   fi
 
+  oc get pods -n istio-system
+
   # For reuse in downstream test executions. Might be run after Serverless
   # upgrade or independently.
   if [[ "${UPGRADE_CLUSTER}" == "true" ]]; then
