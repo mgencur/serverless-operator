@@ -52,6 +52,9 @@ uninstall-full-mesh:
 install-with-mesh-enabled:
   FULL_MESH=true ./hack/install.sh
 
+install-tracing:
+	./hack/tracing.sh
+
 teardown:
 	./hack/teardown.sh
 
