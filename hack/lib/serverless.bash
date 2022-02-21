@@ -220,6 +220,8 @@ spec:
       loglevel.webhook: "debug"
       loglevel.kafkachannel-dispatcher: "debug"
       loglevel.kafkachannel-controller: "debug"
+      loglevel.kafkasource: "debug"
+      loglevel.kafka-controller: "debug"
       loglevel.inmemorychannel-dispatcher: "debug"
       loglevel.mt-broker-controller: "debug"
 EOF
