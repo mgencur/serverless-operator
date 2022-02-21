@@ -55,6 +55,9 @@ install-with-mesh-enabled:
 install-tracing:
 	./hack/tracing.sh
 
+install-clusterlogging:
+	./hack/clusterlogging.sh
+
 teardown:
 	./hack/teardown.sh
 
@@ -124,6 +127,7 @@ test-upstream-upgrade-testonly:
 test-upstream-upgrade:
 	UNINSTALL_STRIMZI="false" ./hack/strimzi.sh
 	./hack/tracing.sh
+	./hack/clusterlogging.sh
 	INSTALL_PREVIOUS_VERSION="true" INSTALL_KAFKA="true" ENABLE_TRACING="true" ./hack/install.sh
 	TEST_KNATIVE_KAFKA=true TEST_KNATIVE_E2E=false TEST_KNATIVE_UPGRADE=true ./test/upstream-e2e-tests.sh
 
