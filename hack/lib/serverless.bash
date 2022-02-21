@@ -224,6 +224,27 @@ spec:
       loglevel.kafka-controller: "debug"
       loglevel.inmemorychannel-dispatcher: "debug"
       loglevel.mt-broker-controller: "debug"
+      zap-logger-config: |
+        {
+          "level": "debug",
+          "development": false,
+          "outputPaths": ["stdout"],
+          "errorOutputPaths": ["stderr"],
+          "encoding": "json",
+          "encoderConfig": {
+            "timeKey": "ts",
+            "levelKey": "level",
+            "nameKey": "logger",
+            "callerKey": "caller",
+            "messageKey": "msg",
+            "stacktraceKey": "stacktrace",
+            "lineEnding": "",
+            "levelEncoder": "",
+            "timeEncoder": "iso8601",
+            "durationEncoder": "",
+            "callerEncoder": ""
+          }
+        }
 EOF
 
   if [[ $ENABLE_TRACING == "true" ]]; then
