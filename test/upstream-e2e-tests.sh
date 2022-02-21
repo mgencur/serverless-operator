@@ -27,7 +27,6 @@ if [[ $TEST_KNATIVE_UPGRADE == true ]]; then
     ensure_kafka_channel_default
   fi
   run_rolling_upgrade_tests
-  sleep 3600
 fi
 
 # Run upstream knative serving, eventing and eventing-kafka tests
