@@ -26,6 +26,7 @@ if [[ $TEST_KNATIVE_UPGRADE == true ]]; then
   if [[ $TEST_KNATIVE_KAFKA == "true" ]]; then
     ensure_kafka_channel_default
   fi
+  ensure_kubeconfig
   run_rolling_upgrade_tests
 fi
 
