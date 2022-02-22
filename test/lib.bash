@@ -181,7 +181,8 @@ function run_rolling_upgrade_tests {
   local image_version image_template channels common_opts
 
   image_version=$(versions.major_minor "${KNATIVE_SERVING_VERSION}")
-  image_template="quay.io/openshift-knative/{{.Name}}:v${image_version}"
+  image_template="docker.io/mgencur/{{.Name}}:1.0"
+#  image_template="quay.io/openshift-knative/{{.Name}}:v${image_version}"
   channels=messaging.knative.dev/v1beta1:KafkaChannel,messaging.knative.dev/v1:InMemoryChannel
 
   # Test configuration. See https://github.com/knative/eventing/tree/main/test/upgrade#probe-test-configuration
