@@ -309,7 +309,7 @@ function add_roles {
 }
 
 function ensure_kubeconfig {
-  if [[ -z "$KUBECONFIG" ]]; then
+  if [[ -z "${KUBECONFIG:-}" ]]; then
     add_user "kubeadmin" "$(head -c 128 < /dev/urandom | base64 | fold -w 8 | head -n 1)"
     oc adm policy add-cluster-role-to-user cluster-admin kubeadmin
     KUBECONFIG="$(pwd)/kubeadmin.kubeconfig"
