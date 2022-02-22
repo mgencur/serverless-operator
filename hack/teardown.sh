@@ -8,6 +8,3 @@ set -Eeuo pipefail
 debugging.setup
 
 teardown_serverless
-teardown_tracing
-delete_catalog_source
-delete_namespaces "${SYSTEM_NAMESPACES[@]}"

@@ -130,6 +130,11 @@ test-upstream-upgrade:
 	INSTALL_PREVIOUS_VERSION="true" INSTALL_KAFKA="true" ENABLE_TRACING="true" ./hack/install.sh
 	TEST_KNATIVE_KAFKA=true TEST_KNATIVE_E2E=false TEST_KNATIVE_UPGRADE=true ./test/upstream-e2e-tests.sh
 
+test-upstream-upgrade-with-cleanup:
+	./hack/teardown.sh
+  INSTALL_PREVIOUS_VERSION="true" INSTALL_KAFKA="true" ./hack/install.sh
+  TEST_KNATIVE_KAFKA=true TEST_KNATIVE_E2E=false TEST_KNATIVE_UPGRADE=true ./test/upstream-e2e-tests.sh
+
 # Alias.
 test-upgrade: test-upstream-upgrade
 
