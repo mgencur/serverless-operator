@@ -410,8 +410,6 @@ function dump_state.setup {
 }
 
 function dump_state {
-  logger.info "Waiting 1 hour before dumping state..."
-  sleep 3600
   logger.info 'Dumping state...'
   logger.debug 'Environment variables:'
   env
