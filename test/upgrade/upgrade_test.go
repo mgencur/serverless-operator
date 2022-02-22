@@ -21,6 +21,7 @@ package upgrade_test
 
 import (
 	"testing"
+	"time"
 
 	"go.uber.org/zap"
 	kafkabrokerupgrade "knative.dev/eventing-kafka-broker/test/upgrade"
@@ -46,21 +47,12 @@ func TestServerlessUpgrade(t *testing.T) {
 		Tests: pkgupgrade.Tests{
 			PreUpgrade:  nil,
 			PostUpgrade: nil,
-			Continual:   merge(
-				kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
-				kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
-				kafkabrokerupgrade.BrokerContinualTests(),
-			),
+			Continual:   kafkaupgrade.SourceContinualTests(continual.SourceTestOptions{}),
 		},
 		Installations: pkgupgrade.Installations{
 			UpgradeWith: []pkgupgrade.Operation{
 				pkgupgrade.NewOperation("UpgradeServerless", func(c pkgupgrade.Context) {
-					if err := installation.UpgradeServerless(ctx); err != nil {
-						c.T.Error("Serverless upgrade failed:", err)
-					}
-					if err := installation.EnableKafkaSink(ctx); err != nil {
-						c.T.Error("Failed to enable KafkaSink on KnativeKafka resource:", err)
-					}
+					time.Sleep(5 * time.Second)
 				}),
 			},
 		},
