@@ -195,7 +195,7 @@ function run_rolling_upgrade_tests {
   export SYSTEM_NAMESPACE="$SERVING_NAMESPACE"
 
   common_opts=(./test/upgrade "-tags=upgrade" \
-    "--kubeconfigs=${KUBECONFIG}" \
+    "--kubeconfigs=" \
     "--channels=${channels}" \
     "--imagetemplate=${image_template}" \
     "--catalogsource=${OLM_SOURCE}" \
