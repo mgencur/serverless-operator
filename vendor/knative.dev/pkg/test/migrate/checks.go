@@ -42,6 +42,7 @@ func ExpectSingleStoredVersion(t *testing.T, crdClient apiextensionsv1.CustomRes
 				t.Errorf("%q does not have a single stored version: %+v", crd.Name, crd)
 			}
 			stored := crd.Status.StoredVersions[0]
+			t.Logf("Stored version for %s: %s", crd.Name, stored)
 			for _, v := range crd.Spec.Versions {
 				if stored == v.Name && !v.Storage {
 					t.Errorf("%q is invalid: spec.versions.storage must be true for %q or "+
