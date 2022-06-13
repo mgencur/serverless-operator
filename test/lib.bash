@@ -197,6 +197,7 @@ function run_rolling_upgrade_tests {
   export EVENTING_UPGRADE_TESTS_SERVING_USE=true
   export EVENTING_UPGRADE_TESTS_CONFIGMOUNTPOINT=/.config/wathola
   export GATEWAY_OVERRIDE="kourier"
+  export GO_TEST_VERBOSITY=standard-verbose
   export GATEWAY_NAMESPACE_OVERRIDE="${INGRESS_NAMESPACE}"
   export SYSTEM_NAMESPACE="$SERVING_NAMESPACE"
 
