@@ -47,7 +47,7 @@ const (
 	jobWaitInterval     = time.Second
 	jobWaitTimeout      = 10 * time.Minute
 	stepEventMsgPattern = "event #([0-9]+).*"
-	exportTraceLimit    = 100
+	exportTraceLimit    = 1000
 )
 
 // Verify will verify prober state after finished has been sent.
