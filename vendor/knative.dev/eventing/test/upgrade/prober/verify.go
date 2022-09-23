@@ -23,6 +23,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"strings"
 	"time"
 
 	"go.uber.org/zap"
@@ -71,9 +72,7 @@ func (p *prober) Verify() (eventErrs []error, eventsSent int) {
 		}
 		return report != nil && report.State != "active", nil
 	}); err != nil {
-		if err := p.exportTrace(p.getTraceForFinishedEvent(), "finished.json"); err != nil {
-			p.log.Warnf("Failed to export trace for Finished event: %v", err)
-		}
+		p.exportTraceForFinishedEvent()
 		p.client.T.Fatalf("Error fetching complete/inactive report: %v\nReport: %+v", err, report)
 	}
 	elapsed := time.Since(start)
@@ -90,10 +89,7 @@ func (p *prober) Verify() (eventErrs []error, eventsSent int) {
 		if i > exportTraceLimit {
 			continue
 		}
-		stepNo := p.getStepNoFromMsg(t)
-		if err := p.exportTrace(p.getTraceForStepEvent(stepNo), fmt.Sprintf("step-%s.json", stepNo)); err != nil {
-			p.log.Warnf("Failed to export trace for Step event #%s: %v", stepNo, err)
-		}
+		p.exportTraceForStepEvent(t)
 	}
 	for _, t := range report.Thrown.Unexpected {
 		eventErrs = append(eventErrs, errors.New(t))
@@ -110,9 +106,10 @@ func (p *prober) Verify() (eventErrs []error, eventsSent int) {
 		if i > exportTraceLimit {
 			continue
 		}
-		stepNo := p.getStepNoFromMsg(t)
-		if err := p.exportTrace(p.getTraceForStepEvent(stepNo), fmt.Sprintf("step-%s.json", stepNo)); err != nil {
-			p.log.Warnf("Failed to export trace for Step event #%s: %v", stepNo, err)
+		if strings.HasPrefix(t, "finish event") {
+			p.exportTraceForFinishedEvent()
+		} else {
+			p.exportTraceForStepEvent(t)
 		}
 	}
 	return eventErrs, report.EventsSent
@@ -152,6 +149,19 @@ func (p *prober) getTraceForFinishedEvent() []byte {
 		p.log.Warn(err)
 	}
 	return trace
+}
+
+func (p *prober) exportTraceForFinishedEvent() {
+	if err := p.exportTrace(p.getTraceForFinishedEvent(), "finished.json"); err != nil {
+		p.log.Warnf("Failed to export trace for Finished event: %v", err)
+	}
+}
+
+func (p *prober) exportTraceForStepEvent(message string) {
+	stepNo := p.getStepNoFromMsg(message)
+	if err := p.exportTrace(p.getTraceForStepEvent(stepNo), fmt.Sprintf("step-%s.json", stepNo)); err != nil {
+		p.log.Warnf("Failed to export trace for Step event #%s: %v", stepNo, err)
+	}
 }
 
 func (p *prober) exportTrace(trace []byte, fileName string) error {
