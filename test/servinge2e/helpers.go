@@ -12,7 +12,6 @@ import (
 )
 
 const (
-	image                 = "quay.io/openshift-knative/helloworld-go"
 	helloworldService     = "helloworld-go"
 	helloworldService2    = "helloworld-go2"
 	kubeHelloworldService = "kube-helloworld-go"
