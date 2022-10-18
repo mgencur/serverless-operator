@@ -17,7 +17,6 @@ function create_namespaces {
   namespaces=("$@")
   for ns in "${namespaces[@]}"; do
     ensure_namespace "${ns}"
-    link_global_pullsecret "${ns}"
   done
   # Create an OperatorGroup if there are no other ones in the namespace.
   if [[ $(oc get operatorgroups -oname -n "${OPERATORS_NAMESPACE}" | wc -l) -eq 0 ]]; then
