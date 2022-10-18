@@ -8,15 +8,6 @@ function ensure_namespace {
   fi
 }
 
-function link_global_pullsecret {
-  local ns
-  ns="${1:?Pass namespace name as arg[1]}"
-  # Link global pull secrets for accessing private registries, see https://issues.redhat.com/browse/SRVKS-833
-  # Allows pulling images from a secured registry, e.g. internal mirror registry for disconnected env
-  oc get secret pull-secret --namespace=openshift-config -o yaml | sed "s/namespace: .*/namespace: ${ns}/" | oc apply -f -
-  oc -n "$ns" secrets link default pull-secret --for=pull
-}
-
 function create_namespaces {
   logger.info 'Create namespaces'
   if [[ $# -eq 0 ]]; then
@@ -39,6 +30,21 @@ metadata:
 EOF
   fi
   logger.success "Namespaces have been created: ${namespaces[*]}"
+}
+
+# Link global pull secrets for accessing private registries, see https://issues.redhat.com/browse/SRVKS-833
+# Allows pulling images from a secured registry, e.g. internal mirror registry for disconnected env.
+function link_global_pullsecret_to_namespaces {
+  logger.info 'Link global pull secret to namespaces'
+  if [[ $# -eq 0 ]]; then
+    echo "Pass an array with namespaces as arg[1]" && exit 1
+  fi
+  local namespaces
+  namespaces=("$@")
+  for ns in "${namespaces[@]}"; do
+    oc get secret pull-secret --namespace=openshift-config -o yaml | sed "s/namespace: .*/namespace: ${ns}/" | oc apply -f -
+    oc -n "$ns" secrets link default pull-secret --for=pull
+  done
 }
 
 function delete_namespaces {
