@@ -8,6 +8,15 @@ function ensure_namespace {
   fi
 }
 
+function link_global_pullsecret {
+  local ns
+  ns="${1:?Pass namespace name as arg[1]}"
+  # Link global pull secrets for accessing private registries, see https://issues.redhat.com/browse/SRVKS-833
+  # Allows pulling images from a secured registry, e.g. internal mirror registry for disconnected env
+  oc get secret pull-secret --namespace=openshift-config -o yaml | sed "s/namespace: .*/namespace: ${ns}/" | oc apply -f -
+  oc -n "$ns" secrets link default pull-secret --for=pull
+}
+
 function create_namespaces {
   logger.info 'Create namespaces'
   if [[ $# -eq 0 ]]; then
@@ -17,6 +26,7 @@ function create_namespaces {
   namespaces=("$@")
   for ns in "${namespaces[@]}"; do
     ensure_namespace "${ns}"
+    link_global_pullsecret "${ns}"
   done
   # Create an OperatorGroup if there are no other ones in the namespace.
   if [[ $(oc get operatorgroups -oname -n "${OPERATORS_NAMESPACE}" | wc -l) -eq 0 ]]; then
