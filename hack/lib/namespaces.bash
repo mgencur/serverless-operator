@@ -41,7 +41,9 @@ function link_global_pullsecret_to_namespaces {
   local namespaces
   namespaces=("$@")
   for ns in "${namespaces[@]}"; do
-    oc get secret pull-secret --namespace=openshift-config -o yaml | sed "s/namespace: .*/namespace: ${ns}/" | oc apply -f -
+    if ! oc -n "${ns} get secret pull-secret" &>/dev/null; then
+      oc -n openshift-config get secret pull-secret -o yaml | sed "s/namespace: .*/namespace: ${ns}/" | oc apply -f -
+    fi
     oc -n "$ns" secrets link default pull-secret --for=pull
   done
 }
