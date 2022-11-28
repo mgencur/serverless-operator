@@ -11,7 +11,7 @@ import (
 	apiextension "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
-	"k8s.io/apimachinery/pkg/util/wait"
+	"k8s.io/client-go/util/retry"
 )
 
 func UpgradeServerless(ctx *test.Context) error {
@@ -150,14 +150,10 @@ func DowngradeServerless(ctx *test.Context) error {
 }
 
 func moveCRDsToAlpha(ctx *test.Context, name string) error {
-	var (
-		crd *apiextension.CustomResourceDefinition
-		err error
-	)
-	waitErr := wait.PollImmediate(test.Interval, test.Timeout, func() (bool, error) {
-		crd, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
+	return retry.RetryOnConflict(retry.DefaultBackoff, func() error {
+		crd, err := ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
 		if err != nil {
-			return false, err
+			return err
 		}
 		for i, v := range crd.Spec.Versions {
 			if v.Name == "v1beta1" {
@@ -172,31 +168,15 @@ func moveCRDsToAlpha(ctx *test.Context, name string) error {
 		}
 		crd.Spec.Conversion = &apiextension.CustomResourceConversion{Strategy: apiextension.ConversionStrategyType("None")}
 		_, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Update(context.Background(), crd, metav1.UpdateOptions{})
-		if err != nil {
-			if strings.Contains(err.Error(), "the object has been modified") {
-				// Re-try this error.
-				return false, nil
-			}
-			return false, err
-		}
-		return true, nil
+		return err
 	})
-	if waitErr != nil {
-		return fmt.Errorf("unable to convert CRD to Alpha: %+v, %w", crd, waitErr)
-	}
-
-	return nil
 }
 
 func setStorageToAlpha(ctx *test.Context, name string) error {
-	var (
-		crd *apiextension.CustomResourceDefinition
-		err error
-	)
-	waitErr := wait.PollImmediate(test.Interval, test.Timeout, func() (bool, error) {
-		crd, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
+	return retry.RetryOnConflict(retry.DefaultBackoff, func() error {
+		crd, err := ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
 		if err != nil {
-			return false, err
+			return err
 		}
 		oldStoredVersions := crd.Status.StoredVersions
 		newStoredVersions := make([]string, 0, len(oldStoredVersions))
@@ -207,18 +187,6 @@ func setStorageToAlpha(ctx *test.Context, name string) error {
 		}
 		crd.Status.StoredVersions = newStoredVersions
 		_, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().UpdateStatus(context.Background(), crd, metav1.UpdateOptions{})
-		if err != nil {
-			if strings.Contains(err.Error(), "the object has been modified") {
-				// Re-try this error.
-				return false, nil
-			}
-			return false, err
-		}
-		return true, nil
+		return err
 	})
-	if waitErr != nil {
-		return fmt.Errorf("unable to set storage to Alpha: %+v, %w", crd, waitErr)
-	}
-
-	return nil
 }
