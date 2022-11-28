@@ -11,6 +11,7 @@ import (
 	apiextension "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/types"
+	"k8s.io/apimachinery/pkg/util/wait"
 )
 
 func UpgradeServerless(ctx *test.Context) error {
@@ -149,45 +150,75 @@ func DowngradeServerless(ctx *test.Context) error {
 }
 
 func moveCRDsToAlpha(ctx *test.Context, name string) error {
-	crd, err := ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
-	if err != nil {
-		return err
-	}
-	for i, v := range crd.Spec.Versions {
-		if v.Name == "v1beta1" {
-			crd.Spec.Versions[i].Served = false
-			crd.Spec.Versions[i].Storage = false
+	var (
+		crd *apiextension.CustomResourceDefinition
+		err error
+	)
+	waitErr := wait.PollImmediate(test.Interval, test.Timeout, func() (bool, error) {
+		crd, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
+		if err != nil {
+			return false, err
 		}
+		for i, v := range crd.Spec.Versions {
+			if v.Name == "v1beta1" {
+				crd.Spec.Versions[i].Served = false
+				crd.Spec.Versions[i].Storage = false
+			}
 
-		if v.Name == "v1alpha1" {
-			crd.Spec.Versions[i].Served = true
-			crd.Spec.Versions[i].Storage = true
+			if v.Name == "v1alpha1" {
+				crd.Spec.Versions[i].Served = true
+				crd.Spec.Versions[i].Storage = true
+			}
 		}
+		crd.Spec.Conversion = &apiextension.CustomResourceConversion{Strategy: apiextension.ConversionStrategyType("None")}
+		_, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Update(context.Background(), crd, metav1.UpdateOptions{})
+		if err != nil {
+			if strings.Contains(err.Error(), "the object has been modified") {
+				// Re-try this error.
+				return false, nil
+			}
+			return false, err
+		}
+		return true, nil
+	})
+	if waitErr != nil {
+		return fmt.Errorf("unable to convert CRD to Alpha: %+v, %w", crd, waitErr)
 	}
-	crd.Spec.Conversion = &apiextension.CustomResourceConversion{Strategy: apiextension.ConversionStrategyType("None")}
-	_, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Update(context.Background(), crd, metav1.UpdateOptions{})
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
 
 func setStorageToAlpha(ctx *test.Context, name string) error {
-	crd, err := ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
-	if err != nil {
-		return err
-	}
-	oldStoredVersions := crd.Status.StoredVersions
-	newStoredVersions := make([]string, 0, len(oldStoredVersions))
-	for _, stored := range oldStoredVersions {
-		if stored != "v1beta1" {
-			newStoredVersions = append(newStoredVersions, stored)
+	var (
+		crd *apiextension.CustomResourceDefinition
+		err error
+	)
+	waitErr := wait.PollImmediate(test.Interval, test.Timeout, func() (bool, error) {
+		crd, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().Get(context.Background(), name, metav1.GetOptions{})
+		if err != nil {
+			return false, err
 		}
+		oldStoredVersions := crd.Status.StoredVersions
+		newStoredVersions := make([]string, 0, len(oldStoredVersions))
+		for _, stored := range oldStoredVersions {
+			if stored != "v1beta1" {
+				newStoredVersions = append(newStoredVersions, stored)
+			}
+		}
+		crd.Status.StoredVersions = newStoredVersions
+		_, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().UpdateStatus(context.Background(), crd, metav1.UpdateOptions{})
+		if err != nil {
+			if strings.Contains(err.Error(), "the object has been modified") {
+				// Re-try this error.
+				return false, nil
+			}
+			return false, err
+		}
+		return true, nil
+	})
+	if waitErr != nil {
+		return fmt.Errorf("unable to set storage to Alpha: %+v, %w", crd, waitErr)
 	}
-	crd.Status.StoredVersions = newStoredVersions
-	_, err = ctx.Clients.APIExtensionClient.ApiextensionsV1().CustomResourceDefinitions().UpdateStatus(context.Background(), crd, metav1.UpdateOptions{})
-	if err != nil {
-		return err
-	}
+
 	return nil
 }
