@@ -46,7 +46,7 @@ func TestServerlessUpgradePrePost(t *testing.T) {
 	suite := pkgupgrade.Suite{
 		Tests: pkgupgrade.Tests{
 			PreUpgrade:    preUpgradeTests(),
-			PostUpgrade:   postUpgradeTests(ctx, true),
+			PostUpgrade:   postUpgradeTests(ctx),
 			PostDowngrade: postDowngradeTests(),
 		},
 		Installations: pkgupgrade.Installations{
