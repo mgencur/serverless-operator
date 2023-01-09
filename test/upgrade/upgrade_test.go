@@ -180,7 +180,7 @@ func postDowngradeTests() []pkgupgrade.Operation {
 		kafkaupgrade.ChannelPostDowngradeTest(),
 		kafkaupgrade.SourcePostDowngradeTest(),
 		kafkabrokerupgrade.BrokerPostDowngradeTest(),
-		kafkabrokerupgrade.NamespacedBrokerPostDowngradeTest()
+		kafkabrokerupgrade.NamespacedBrokerPostDowngradeTest(),
 		kafkabrokerupgrade.SinkPostDowngradeTest(),
 	)
 	return tests
