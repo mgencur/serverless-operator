@@ -164,7 +164,7 @@ func postUpgradeTests(ctx *test.Context, failOnNoJobs bool) []pkgupgrade.Operati
 		kafkaupgrade.ChannelPostUpgradeTest(),
 		kafkaupgrade.SourcePostUpgradeTest(),
 		kafkabrokerupgrade.BrokerPostUpgradeTest(),
-		kafkabrokerupgrade.NamespacedBrokerPostUpgradeTest()
+		kafkabrokerupgrade.NamespacedBrokerPostUpgradeTest(),
 		kafkabrokerupgrade.SinkPostUpgradeTest(),
 	)
 	tests = append(tests, servingupgrade.ServingPostUpgradeTests()...)
