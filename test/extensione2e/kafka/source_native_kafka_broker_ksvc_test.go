@@ -37,22 +37,23 @@ func TestSourceToNamespacedKafkaBrokerToKnativeService(t *testing.T) {
 func createBrokerFunc(t *testing.T, brokerClass string) func(client *test.Context) *eventingv1.Broker {
 	return func(client *test.Context) *eventingv1.Broker {
 		kafkaBrokerConfigName := "kafka-broker-config"
-		kafkaBrokerConfigNamespace := "knative-eventing"
+		kafkaBrokerConfigNamespace := "serverless-tests"
 		var brokerConfigMap *corev1.ConfigMap
-		if brokerClass == kafka.NamespacedBrokerClass {
-			kafkaBrokerConfigNamespace = test.Namespace
-			brokerConfigMap = &corev1.ConfigMap{
-				ObjectMeta: metav1.ObjectMeta{
-					Name:      kafkaBrokerConfigName,
-					Namespace: kafkaBrokerConfigNamespace,
-				},
-				Data: map[string]string{
-					kafka.BootstrapServersConfigMapKey:              kafkatestpkg.BootstrapServersPlaintext,
-					kafka.DefaultTopicNumPartitionConfigMapKey:      fmt.Sprintf("%d", kafkatestpkg.NumPartitions),
-					kafka.DefaultTopicReplicationFactorConfigMapKey: fmt.Sprintf("%d", kafkatestpkg.ReplicationFactor),
-				},
-			}
+		//if brokerClass == kafka.NamespacedBrokerClass {
+		kafkaBrokerConfigNamespace = test.Namespace
+		brokerConfigMap = &corev1.ConfigMap{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      kafkaBrokerConfigName,
+				Namespace: kafkaBrokerConfigNamespace,
+			},
+			Data: map[string]string{
+				kafka.BootstrapServersConfigMapKey:              kafkatestpkg.BootstrapServersSsl,
+				kafka.DefaultTopicNumPartitionConfigMapKey:      fmt.Sprintf("%d", kafkatestpkg.NumPartitions),
+				kafka.DefaultTopicReplicationFactorConfigMapKey: fmt.Sprintf("%d", kafkatestpkg.ReplicationFactor),
+				"auth.secret.ref.name":                          "strimzi-tls-secret",
+			},
 		}
+		//}
 		nativeKafkaBroker := &eventingv1.Broker{
 			ObjectMeta: metav1.ObjectMeta{
 				Name:        nativeKafkaBrokerName,
@@ -70,12 +71,12 @@ func createBrokerFunc(t *testing.T, brokerClass string) func(client *test.Contex
 		}
 
 		// Create Kafka Broker ConfigMap for Namespaced broker only
-		if brokerClass == kafka.NamespacedBrokerClass {
-			_, err := client.Clients.Kube.CoreV1().ConfigMaps(test.Namespace).Create(context.Background(), brokerConfigMap, metav1.CreateOptions{})
-			if err != nil {
-				t.Fatal("Unable to create KafkaBroker ConfigMap: ", err)
-			}
+		//if brokerClass == kafka.NamespacedBrokerClass {
+		_, err := client.Clients.Kube.CoreV1().ConfigMaps(test.Namespace).Create(context.Background(), brokerConfigMap, metav1.CreateOptions{})
+		if err != nil {
+			t.Fatal("Unable to create KafkaBroker ConfigMap: ", err)
 		}
+		//}
 
 		// Create the (native) Kafka Broker
 		broker, err := client.Clients.Eventing.EventingV1().Brokers(test.Namespace).Create(context.Background(), nativeKafkaBroker, metav1.CreateOptions{})
