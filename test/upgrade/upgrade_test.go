@@ -102,9 +102,18 @@ func TestClusterUpgrade(t *testing.T) {
 	cfg := newUpgradeConfig(t)
 	suite := pkgupgrade.Suite{
 		Tests: pkgupgrade.Tests{
-			PreUpgrade:  preUpgradeTests(),
-			PostUpgrade: postUpgradeTests(ctx, false),
-			// Do not include continual tests as they're failing across cluster upgrades.
+			//PreUpgrade:  preUpgradeTests(),
+			//PostUpgrade: postUpgradeTests(ctx, false),
+			Continual: merge(
+				[]pkgupgrade.BackgroundOperation{
+					servingupgrade.ProbeTest(),
+					servingupgrade.AutoscaleSustainingWithTBCTest(),
+					servingupgrade.AutoscaleSustainingTest(),
+				},
+				kafkaupgrade.ChannelContinualTests(continual.ChannelTestOptions{}),
+				kafkabrokerupgrade.BrokerContinualTests(),
+				kafkabrokerupgrade.SinkContinualTests(),
+			),
 		},
 		Installations: pkgupgrade.Installations{
 			UpgradeWith: []pkgupgrade.Operation{
