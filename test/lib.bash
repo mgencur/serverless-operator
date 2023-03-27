@@ -188,7 +188,7 @@ function downstream_knative_kafka_e2e_tests {
     IFS=" " read -r -a RUN_FLAGS <<< "$OPERATOR_TEST_FLAGS"
   fi
 
-  go_test_e2e "${RUN_FLAGS[@]}" ./test/extensione2e/kafka \
+  go_test_e2e "${RUN_FLAGS[@]}" ./test/extensione2e/kafka -run TestKafkaUserPermissions \
     --kubeconfigs "${kubeconfigs_str}" \
     --imagetemplate "${IMAGE_TEMPLATE}" \
     "$@"

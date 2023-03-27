@@ -13,9 +13,10 @@ install-operator:
 	INSTALL_SERVING="false" INSTALL_EVENTING="false" ./hack/install.sh
 
 install-all:
-	UNINSTALL_STRIMZI="false" ./hack/strimzi.sh
-	./hack/tracing.sh
+#	UNINSTALL_STRIMZI="false" ./hack/strimzi.sh
+#	./hack/tracing.sh
 	SCALE_UP=4 INSTALL_KAFKA="true" ENABLE_TRACING=true ./hack/install.sh
+	INSTALL_KAFKA="true" ENABLE_TRACING=true ./hack/install.sh
 
 install-tracing:
 	./hack/tracing.sh
