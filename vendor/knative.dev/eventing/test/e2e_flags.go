@@ -54,6 +54,7 @@ func InitializeEventingFlags() {
 	EventingFlags.Channels = []metav1.TypeMeta{testlib.DefaultChannel}
 	flag.Var(&EventingFlags.Channels, "channels", ChannelUsage)
 
+	flag.StringVar(&EventingFlags.BrokerClass, "brokerclass", "MTChannelBasedBroker", BrokerClassUsage)
 	flag.Var(&EventingFlags.Sources, "sources", SourceUsage)
 	flag.StringVar(&EventingFlags.PipeFile, "pipefile", "/tmp/prober-signal", "Temporary file to write the prober signal into.")
 	flag.StringVar(&EventingFlags.ReadyFile, "readyfile", "/tmp/prober-ready", "Temporary file to get the prober result.")
