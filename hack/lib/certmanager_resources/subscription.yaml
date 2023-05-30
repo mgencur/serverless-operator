@@ -12,11 +12,10 @@ kind: OperatorGroup
 metadata:
   name: cert-manager-operator
   namespace: cert-manager-operator
-spec: {}
-# TODO: uncomment to upgrade cert-manager to its first stable release
-#  targetNamespaces:
-#    - cert-manager-operator
-#  upgradeStrategy: Default
+spec:
+  targetNamespaces:
+    - cert-manager-operator
+  upgradeStrategy: Default
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
