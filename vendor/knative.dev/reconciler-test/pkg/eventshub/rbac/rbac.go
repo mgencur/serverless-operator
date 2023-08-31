@@ -50,7 +50,7 @@ func WithPullSecrets(ctx context.Context, t feature.T) manifest.CfgFn {
 	}
 
 	return func(cfg map[string]interface{}) {
-		if len(serviceAccount.Secrets) == 0 {
+		if len(serviceAccount.ImagePullSecrets) == 0 {
 			return
 		}
 		if _, set := cfg["withPullSecrets"]; !set {
@@ -58,7 +58,7 @@ func WithPullSecrets(ctx context.Context, t feature.T) manifest.CfgFn {
 		}
 		withPullSecrets := cfg["withPullSecrets"].(map[string]interface{})
 		withPullSecrets["secrets"] = []string{}
-		for _, secret := range serviceAccount.Secrets {
+		for _, secret := range serviceAccount.ImagePullSecrets {
 			withPullSecrets["secrets"] = append(withPullSecrets["secrets"].([]string), secret.Name)
 		}
 	}
