@@ -17,9 +17,3 @@ kind: ServiceAccount
 metadata:
   name: {{ .namespace }}
   namespace: {{ .namespace }}
-  {{ if .withPullSecrets }}
-  imagePullSecrets:
-    {{ range $_, $value := .withPullSecrets.secrets }}
-    - {{ $value }}
-    {{ end }}
-  {{ end }}
