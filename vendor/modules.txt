@@ -1625,7 +1625,7 @@ knative.dev/pkg/webhook/json
 knative.dev/pkg/webhook/resourcesemantics
 knative.dev/pkg/webhook/resourcesemantics/conversion
 knative.dev/pkg/webhook/resourcesemantics/defaulting
-# knative.dev/reconciler-test v0.0.0-20230503093155-937cf5922570
+# knative.dev/reconciler-test v0.0.0-20230817080342-39774f133674 => github.com/mgencur/reconciler-test v0.0.0-20230831082116-faf4759adf77
 ## explicit; go 1.18
 knative.dev/reconciler-test/pkg/environment
 knative.dev/reconciler-test/pkg/eventshub
@@ -1749,3 +1749,4 @@ sigs.k8s.io/yaml
 # k8s.io/utils => k8s.io/utils v0.0.0-20220728103510-ee6ede2d64ed
 # sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.9.7
 # sigs.k8s.io/json => sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2
+# knative.dev/reconciler-test => github.com/mgencur/reconciler-test v0.0.0-20230831082116-faf4759adf77

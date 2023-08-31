@@ -787,6 +787,8 @@ github.com/matttproud/golang_protobuf_extensions v1.0.1/go.mod h1:D8He9yQNgCq6Z5
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369 h1:I0XW9+e1XWDxdcEniV4rQAIOPUGDq67JSCiRCgGCZLI=
 github.com/matttproud/golang_protobuf_extensions v1.0.2-0.20181231171920-c182affec369/go.mod h1:BSXmuO+STAnVfrANrmjBb36TMTDstsz7MSK+HVaYKv4=
 github.com/maxbrunsfeld/counterfeiter/v6 v6.2.2/go.mod h1:eD9eIE7cdwcMi9rYluz88Jz2VyhSmden33/aXg4oVIY=
+github.com/mgencur/reconciler-test v0.0.0-20230831082116-faf4759adf77 h1:m2hvlQpNdG3rr58lZbOSCjuoV4gh8VutNAwT2ju72L8=
+github.com/mgencur/reconciler-test v0.0.0-20230831082116-faf4759adf77/go.mod h1:By7fsbkjKWbTmxwAs9lL1itxZI1otbhiEsAZmprEtvI=
 github.com/miekg/dns v1.0.14/go.mod h1:W1PPwlIAgtquWBMBEV9nkV9Cazfe8ScdGz/Lj7v3Nrg=
 github.com/miekg/dns v1.1.17/go.mod h1:WgzbA6oji13JREwiNsRDNfl7jYdPnmz+VEuLrA+/48M=
 github.com/mikefarah/yaml/v2 v2.4.0/go.mod h1:ahVqZF4n1W4NqwvVnZzC4es67xsW9uR/RRf2RRxieJU=
@@ -1930,8 +1932,6 @@ knative.dev/operator v0.36.6 h1:bt1jjgCekkwZiuDHjv7iW0BFp4FQvOD5p0GvrHfsjnM=
 knative.dev/operator v0.36.6/go.mod h1:3KW5oOziig3eJu9gkAlRlcpt9s34mwkL9/BC9S5pWvM=
 knative.dev/pkg v0.0.0-20230224205330-75da922ef055 h1:VfKOAnbgJXJMz7n66yW7Rj6Sl2bQZng6RzvX4MMB2Jg=
 knative.dev/pkg v0.0.0-20230224205330-75da922ef055/go.mod h1:QkgVAUCziNOZmoqL/E25ig2cbVQ2teZyGNCNqaApO44=
-knative.dev/reconciler-test v0.0.0-20230503093155-937cf5922570 h1:4vbk91V/3Ds+fzB2UyesuPrrBgxs2W4bhcS4qaLwBoI=
-knative.dev/reconciler-test v0.0.0-20230503093155-937cf5922570/go.mod h1:vZihHUKPh+sMzzx2lHgkM2tKr+f/lZqMJ9O7Jw0DaYs=
 pgregory.net/rapid v0.3.3 h1:jCjBsY4ln4Atz78QoBWxUEvAHaFyNDQg9+WU62aCn1U=
 pgregory.net/rapid v0.3.3/go.mod h1:UYpPVyjFHzYBGHIxLFoupi8vwk6rXNzRY9OMvVxFIOU=
 rsc.io/binaryregexp v0.2.0/go.mod h1:qTv7/COck+e2FymRvadv62gMdZztPaShugOCi3I+8D8=

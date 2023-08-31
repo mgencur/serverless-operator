@@ -176,7 +176,7 @@ require (
 	github.com/rogpeppe/go-internal v1.8.1 // indirect
 	go.uber.org/atomic v1.9.0
 	k8s.io/apiextensions-apiserver v0.25.4
-	knative.dev/reconciler-test v0.0.0-20230503093155-937cf5922570
+	knative.dev/reconciler-test v0.0.0-20230817080342-39774f133674
 )
 
 replace (
@@ -204,3 +204,5 @@ replace (
 	sigs.k8s.io/controller-runtime => sigs.k8s.io/controller-runtime v0.9.7
 	sigs.k8s.io/json => sigs.k8s.io/json v0.0.0-20220713155537-f223a00ba0e2
 )
+
+replace knative.dev/reconciler-test => github.com/mgencur/reconciler-test v0.0.0-20230831082116-faf4759adf77
