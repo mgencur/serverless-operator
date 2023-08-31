@@ -26,23 +26,7 @@ import (
 	"k8s.io/apimachinery/pkg/types"
 	"k8s.io/apimachinery/pkg/util/wait"
 	kubeclient "knative.dev/pkg/client/injection/kube/client"
-
-	"knative.dev/reconciler-test/pkg/milestone"
 )
-
-type namespaceKey struct{}
-
-func withNamespace(ctx context.Context, namespace string) context.Context {
-	return context.WithValue(ctx, namespaceKey{}, namespace)
-}
-
-func getNamespace(ctx context.Context) string {
-	ns := ctx.Value(namespaceKey{})
-	if ns == nil {
-		return ""
-	}
-	return ns.(string)
-}
 
 // CreateNamespaceIfNeeded creates a new namespace if it does not exist.
 func (mr *MagicEnvironment) CreateNamespaceIfNeeded() error {
@@ -115,35 +99,47 @@ func (mr *MagicEnvironment) CreateNamespaceIfNeeded() error {
 			return fmt.Errorf("error copying the image pull Secret: %s", err)
 		}
 
-		_, err = c.CoreV1().ServiceAccounts(mr.namespace).Patch(context.Background(), sa.Name, types.StrategicMergePatchType,
-			[]byte(`{"imagePullSecrets":[{"name":"`+mr.imagePullSecretName+`"}]}`), metav1.PatchOptions{})
+		for _, secret := range sa.ImagePullSecrets {
+			if secret.Name == mr.imagePullSecretName {
+				return nil
+			}
+		}
+
+		// Prevent overwriting existing imagePullSecrets
+		patch := `[{"op":"add","path":"/imagePullSecrets/-","value":{"name":"` + mr.imagePullSecretName + `"}}]`
+		if len(sa.ImagePullSecrets) == 0 {
+			patch = `[{"op":"add","path":"/imagePullSecrets","value":[{"name":"` + mr.imagePullSecretName + `"}]}]`
+		}
+
+		_, err = c.CoreV1().ServiceAccounts(mr.namespace).Patch(context.Background(), sa.Name, types.JSONPatchType,
+			[]byte(patch), metav1.PatchOptions{})
 		if err != nil {
-			return fmt.Errorf("patch failed on NS/SA (%s/%s): %s", mr.namespace, sa.Name, err)
+			return fmt.Errorf("patch failed on NS/SA (%s/%s): %w",
+				mr.namespace, sa.Name, err)
 		}
 	}
+
 	return nil
 }
 
-func (mr *MagicEnvironment) DeleteNamespaceIfNeeded(result milestone.Result) error {
-	if (result.Failed() && !mr.teardownOnFail) || !mr.namespaceCreated {
-		return nil
-	}
+func (mr *MagicEnvironment) DeleteNamespaceIfNeeded() error {
+	if mr.namespaceCreated {
+		c := kubeclient.Get(mr.c)
 
-	c := kubeclient.Get(mr.c)
+		_, err := c.CoreV1().Namespaces().Get(context.Background(), mr.namespace, metav1.GetOptions{})
+		if apierrors.IsNotFound(err) {
+			mr.namespaceCreated = false
+			return nil
+		} else if err != nil {
+			return err
+		}
 
-	_, err := c.CoreV1().Namespaces().Get(context.Background(), mr.namespace, metav1.GetOptions{})
-	if apierrors.IsNotFound(err) {
+		if err := c.CoreV1().Namespaces().Delete(context.Background(), mr.namespace, metav1.DeleteOptions{}); err != nil {
+			return err
+		}
 		mr.namespaceCreated = false
-		return nil
-	} else if err != nil {
-		return err
+		mr.milestones.NamespaceDeleted(mr.namespace)
 	}
-
-	if err := c.CoreV1().Namespaces().Delete(context.Background(), mr.namespace, metav1.DeleteOptions{}); err != nil {
-		return err
-	}
-	mr.namespaceCreated = false
-	mr.milestones.NamespaceDeleted(mr.namespace)
 
 	return nil
 }
