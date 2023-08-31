@@ -20,6 +20,6 @@ metadata:
 {{ if .withPullSecrets }}
 imagePullSecrets:
   {{ range $_, $value := .withPullSecrets.secrets }}
-  - {{ $value }}
+  - name: {{ $value }}
   {{ end }}
 {{ end }}
