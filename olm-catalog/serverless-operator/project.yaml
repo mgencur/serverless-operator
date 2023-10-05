@@ -70,4 +70,3 @@ upgrade_sequence:
     - csv: serverless-operator.v1.30.0
     - csv: serverless-operator.v1.31.0
     - csv: serverless-operator.v1.32.0
-      source: serverless-operator
