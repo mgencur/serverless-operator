@@ -48,6 +48,9 @@ mkdir -p "$policies_path"
 
 for tenant in ${tenants//,/ }; do
   echo "Generating AuthorizationPolicies for tenant $tenant"
+  # Optional: Use a URL pointing to .tgz file for testing the final helm chart
+  # before pushing to https://github.com/openshift-helm-charts/charts
+  # Example: helm template https://github.com/Kaustubh-pande/charts/raw/knative-istio-authz-1.31-release/charts/redhat/redhat/knative-istio-authz/1.31.0/knative-istio-authz-1.31.0.tgz --set "name=$tenant" --set "namespaces={$tenant}" > "$policies_path/$tenant.yaml"
   helm template "$template_cache" --set "name=$tenant" --set "namespaces={$tenant}" > "$policies_path/$tenant.yaml"
 done
 
