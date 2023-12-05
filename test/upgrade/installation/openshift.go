@@ -189,7 +189,7 @@ func pauseMachineConfigPool(ctx *test.Context, pause bool) error {
 }
 
 func ApplyAdminAcks(ctx *test.Context) error {
-	for adminAck := range adminAcks {
+	for _, adminAck := range adminAcks {
 		if _, err := ctx.Clients.Kube.CoreV1().ConfigMaps("openshift-config").
 			Patch(context.Background(),
 				"admin-acks",
