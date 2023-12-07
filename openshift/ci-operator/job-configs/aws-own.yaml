@@ -1,19 +1,17 @@
-# This file only contains the definition of tests for the CI config.
-tests:
-  # TODO: Generate from template to replace 414 below?
-  - as: e2e-aws-ovn-ocp-414-continuous
-    cron: 0 0 * * 0
-    steps:
-      cluster_profile: aws
-      test:
-        - as: serverless-e2e
-          commands: make install-mesh test-e2e-with-kafka
-          # dependencies: TO BE GENERATED
-          from: serverless-operator-src
-          resources:
-            limits:
-              memory: 6Gi
-            requests:
-              cpu: 100m
-              memory: 200Mi
-      workflow: openshift-e2e-aws-ovn
+# TODO: Generate from template to replace 414 below?
+- as: e2e-aws-ovn-ocp-414-continuous
+  cron: 0 0 * * 0
+  steps:
+    cluster_profile: aws
+    test:
+      - as: serverless-e2e
+        commands: make install-mesh test-e2e-with-kafka
+        # dependencies: TO BE GENERATED
+        from: serverless-operator-src
+        resources:
+          limits:
+            memory: 6Gi
+          requests:
+            cpu: 100m
+            memory: 200Mi
+    workflow: openshift-e2e-aws-ovn
