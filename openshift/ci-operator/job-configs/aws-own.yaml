@@ -9,7 +9,7 @@ tests:
         - as: serverless-e2e
           commands: make install-mesh test-e2e-with-kafka
           # dependencies: TO BE GENERATED
-          from: serverless-operator-src
+          from: serverless-source-image
           resources:
             limits:
               memory: 6Gi
