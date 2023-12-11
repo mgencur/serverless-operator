@@ -1,6 +1,6 @@
 FROM registry.ci.openshift.org/origin/4.14:operator-registry AS opm
 
-FROM registry.ci.openshift.org/ocp/4.14:base as builder
+FROM quay.io/openshift/origin-base:4.14 as builder
 
 COPY --from=opm /bin/opm /bin/opm
 
