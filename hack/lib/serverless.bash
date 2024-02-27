@@ -203,6 +203,9 @@ function enable_istio {
 
   istio_patch="$(mktemp -t istio-XXXXX.yaml)"
   cat - << EOF > "${istio_patch}"
+metadata:
+  annotations:
+    serverless.openshift.io/disable-istio-net-policies-generation: "true"
 spec:
   ingress:
     istio:

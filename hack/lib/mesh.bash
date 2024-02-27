@@ -125,7 +125,6 @@ function deploy_gateways {
   for ns in serverless-tests eventing-e2e0 eventing-e2e1 eventing-e2e2 eventing-e2e3 eventing-e2e4; do
     oc apply -n "$ns" -f "${resources_dir}"/kafka-service-entry.yaml || return $?
   done
-  oc apply -n "serverless-tests" -f "${resources_dir}"/network-policy-monitoring.yaml || return $?
 }
 
 function undeploy_gateways {
