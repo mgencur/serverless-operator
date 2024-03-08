@@ -1489,15 +1489,12 @@ knative.dev/eventing-kafka-broker/control-plane/pkg/reconciler/channel/resources
 knative.dev/eventing-kafka-broker/control-plane/pkg/security
 knative.dev/eventing-kafka-broker/control-plane/pkg/util
 knative.dev/eventing-kafka-broker/test/e2e_new/bogus_config
-knative.dev/eventing-kafka-broker/test/e2e_sink
 knative.dev/eventing-kafka-broker/test/lib
 knative.dev/eventing-kafka-broker/test/lib/resources
 knative.dev/eventing-kafka-broker/test/pkg
 knative.dev/eventing-kafka-broker/test/pkg/addressable
-knative.dev/eventing-kafka-broker/test/pkg/broker
 knative.dev/eventing-kafka-broker/test/pkg/kafka
 knative.dev/eventing-kafka-broker/test/pkg/sink
-knative.dev/eventing-kafka-broker/test/pkg/testing
 knative.dev/eventing-kafka-broker/test/rekt/features
 knative.dev/eventing-kafka-broker/test/rekt/features/featuressteps
 knative.dev/eventing-kafka-broker/test/rekt/resources/configmap
@@ -1507,13 +1504,10 @@ knative.dev/eventing-kafka-broker/test/rekt/resources/kafkachannel
 knative.dev/eventing-kafka-broker/test/rekt/resources/kafkasink
 knative.dev/eventing-kafka-broker/test/rekt/resources/kafkasource
 knative.dev/eventing-kafka-broker/test/rekt/resources/kafkatopic
-knative.dev/eventing-kafka-broker/test/upgrade
 knative.dev/eventing-kafka-broker/test/upgrade/continual
-knative.dev/eventing-kafka-broker/test/upgrade/installation
 # knative.dev/hack v0.0.0-20231123073118-c0f04e812cfe => knative.dev/hack v0.0.0-20230712131415-ddae80293c43
 ## explicit; go 1.18
 knative.dev/hack
-knative.dev/hack/shell
 # knative.dev/networking v0.0.0-20231012062757-a5958051caf8 => knative.dev/networking v0.0.0-20231023175057-21fb00ea6096
 ## explicit; go 1.18
 knative.dev/networking/pkg
