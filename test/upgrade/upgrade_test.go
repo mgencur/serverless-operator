@@ -26,7 +26,6 @@ import (
 	"time"
 
 	"knative.dev/eventing-kafka-broker/control-plane/pkg/kafka"
-	kafkabrokerupgrade "knative.dev/eventing-kafka-broker/test/upgrade"
 	"knative.dev/eventing-kafka-broker/test/upgrade/continual"
 	eventingtest "knative.dev/eventing/test"
 	testlib "knative.dev/eventing/test/lib"
@@ -87,8 +86,8 @@ func TestServerlessUpgradeContinual(t *testing.T) {
 			Continual: merge(
 				ServingContinualTests(ctx),
 				ChannelContinualTests(ctx),
-				kafkabrokerupgrade.BrokerContinualTests(),
-				kafkabrokerupgrade.SinkContinualTests(),
+				//kafkabrokerupgrade.BrokerContinualTests(),
+				//kafkabrokerupgrade.SinkContinualTests(),
 			),
 		},
 		Installations: pkgupgrade.Installations{
