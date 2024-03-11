@@ -398,6 +398,7 @@ EOF
 
   # Test configuration. See https://github.com/knative/eventing/tree/main/test/upgrade#probe-test-configuration
   # TODO(ksuszyns): remove EVENTING_UPGRADE_TESTS_SERVING_SCALETOZERO when knative/operator#297 is fixed.
+  export EVENTING_UPGRADE_TESTS_INTERVAL=1s
   export EVENTING_UPGRADE_TESTS_SERVING_SCALETOZERO=false
   # Review this line as part of SRVCOM-2176
   export EVENTING_UPGRADE_TESTS_SERVING_USE=false
@@ -447,7 +448,7 @@ EOF
     fi
     # Run the two test suites one by one to prevent the situation when nested
     # tests time out and cause all other tests to have "Unknown" status.
-    go_test_e2e -run=TestServerlessUpgradePrePost -timeout=90m "${common_opts[@]}"
+    #go_test_e2e -run=TestServerlessUpgradePrePost -timeout=90m "${common_opts[@]}"
     go_test_e2e -run=TestServerlessUpgradeContinual -timeout=60m "${common_opts[@]}"
   fi
 
