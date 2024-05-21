@@ -31,28 +31,42 @@ import (
 	v1test "knative.dev/serving/test/v1"
 )
 
+var (
+	deploymentFailureNames = test.ResourceNames{
+		Service: "deployment-upgrade-failure",
+		Image:   test.HelloWorld,
+	}
+)
+
+const (
+	webhookName = "broken-webhook"
+)
+
 func DeploymentFailurePostUpgrade() pkgupgrade.Operation {
 	return pkgupgrade.NewOperation("DeploymentFailurePostUpgrade", func(c pkgupgrade.Context) {
 		clients := e2e.Setup(c.T)
 
-		names := test.ResourceNames{
-			Service: "deployment-upgrade-failure",
-			Image:   test.HelloWorld,
-		}
+		test.EnsureCleanup(c.T, func() {
+			if err := clients.KubeClient.AdmissionregistrationV1().MutatingWebhookConfigurations().Delete(
+				context.Background(), webhookName, metav1.DeleteOptions{}); err != nil {
+				c.T.Fatal("Failed to delete webhook:", err)
+			}
+			test.TearDown(clients, &deploymentFailureNames)
+		})
 
-		service, err := clients.ServingClient.Services.Get(context.Background(), names.Service, metav1.GetOptions{})
+		service, err := clients.ServingClient.Services.Get(context.Background(), deploymentFailureNames.Service, metav1.GetOptions{})
 		if err != nil {
 			c.T.Fatal("Failed to get Service: ", err)
 		}
 
 		// Deployment failures should surface to the Service Ready Condition
-		if err := v1test.WaitForServiceState(clients.ServingClient, names.Service, v1test.IsServiceFailed, "ServiceIsNotReady"); err != nil {
+		if err := v1test.WaitForServiceState(clients.ServingClient, deploymentFailureNames.Service, v1test.IsServiceFailed, "ServiceIsNotReady"); err != nil {
 			c.T.Fatal("Service did not transition to Ready=False", err)
 		}
 
 		// Traffic should still work since the deployment has an active replicaset
 		url := service.Status.URL.URL()
-		assertServiceResourcesUpdated(c.T, clients, names, url, test.HelloWorldText)
+		assertServiceResourcesUpdated(c.T, clients, deploymentFailureNames, url, test.HelloWorldText)
 	})
 }
 
@@ -62,12 +76,8 @@ func DeploymentFailurePreUpgrade() pkgupgrade.Operation {
 		ctx := context.Background()
 
 		clients := e2e.Setup(c.T)
-		names := &test.ResourceNames{
-			Service: "deployment-upgrade-failure",
-			Image:   test.HelloWorld,
-		}
 
-		resources, err := v1test.CreateServiceReady(c.T, clients, names, func(s *v1.Service) {
+		resources, err := v1test.CreateServiceReady(c.T, clients, &deploymentFailureNames, func(s *v1.Service) {
 			s.Spec.Template.Annotations = map[string]string{
 				autoscaling.MinScaleAnnotation.Key(): "1",
 				autoscaling.MaxScaleAnnotation.Key(): "1",
@@ -80,7 +90,7 @@ func DeploymentFailurePreUpgrade() pkgupgrade.Operation {
 
 		url := resources.Service.Status.URL.URL()
 		// This polls until we get a 200 with the right body.
-		assertServiceResourcesUpdated(c.T, clients, *names, url, test.HelloWorldText)
+		assertServiceResourcesUpdated(c.T, clients, deploymentFailureNames, url, test.HelloWorldText)
 
 		// Setup webhook that fails when deployment is updated
 		// Failing to update the Deployment shouldn't cause a traffic drop
@@ -91,7 +101,7 @@ func DeploymentFailurePreUpgrade() pkgupgrade.Operation {
 
 		selector := &metav1.LabelSelector{
 			MatchLabels: map[string]string{
-				"serving.knative.dev/service": names.Service,
+				"serving.knative.dev/service": deploymentFailureNames.Service,
 			},
 		}
 
@@ -100,7 +110,7 @@ func DeploymentFailurePreUpgrade() pkgupgrade.Operation {
 			ctx,
 			&admissionv1.MutatingWebhookConfiguration{
 				ObjectMeta: metav1.ObjectMeta{
-					Name: "broken-webhook",
+					Name: webhookName,
 				},
 				Webhooks: []admissionv1.MutatingWebhook{{
 					AdmissionReviewVersions: []string{"v1"},
