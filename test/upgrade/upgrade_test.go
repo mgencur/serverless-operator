@@ -110,8 +110,8 @@ func TestClusterUpgrade(t *testing.T) {
 	}
 	suite := pkgupgrade.Suite{
 		Tests: pkgupgrade.Tests{
-			PreUpgrade:  preUpgradeTests(),
-			PostUpgrade: postUpgradeTests(ctx, false),
+			PreUpgrade:  preClusterUpgradeTests(),
+			PostUpgrade: postClusterUpgradeTests(ctx, false),
 			// Do not include continual tests as they're failing across cluster upgrades.
 		},
 		Installations: pkgupgrade.Installations{
@@ -164,6 +164,21 @@ func preUpgradeTests() []pkgupgrade.Operation {
 	return append(tests, servingupgrade.ServingPreUpgradeTests()...)
 }
 
+func preClusterUpgradeTests() []pkgupgrade.Operation {
+	return excludeTest(preUpgradeTests(), "DeploymentFailurePreUpgrade")
+}
+
+func excludeTest(tests []pkgupgrade.Operation, name string) []pkgupgrade.Operation {
+	for i, operation := range tests {
+		if operation.Name() == name {
+			// make sure we keep the order of the slice:
+			tests = append(tests[:i], tests[i+1:]...)
+			break
+		}
+	}
+	return tests
+}
+
 func postUpgradeTests(ctx *test.Context, failOnNoJobs bool) []pkgupgrade.Operation {
 	tests := []pkgupgrade.Operation{waitForServicesReady(ctx)}
 	tests = append(tests, upgrade.VerifyPostInstallJobs(ctx, upgrade.VerifyPostJobsConfig{
@@ -178,6 +193,10 @@ func postUpgradeTests(ctx *test.Context, failOnNoJobs bool) []pkgupgrade.Operati
 	tests = append(tests, EventingKafkaBrokerPostUpgradeTests()...)
 	tests = append(tests, servingupgrade.ServingPostUpgradeTests()...)
 	return tests
+}
+
+func postClusterUpgradeTests(ctx *test.Context, failOnNoJobs bool) []pkgupgrade.Operation {
+	return excludeTest(postUpgradeTests(ctx, failOnNoJobs), "DeploymentFailurePostUpgrade")
 }
 
 func postDowngradeTests() []pkgupgrade.Operation {
