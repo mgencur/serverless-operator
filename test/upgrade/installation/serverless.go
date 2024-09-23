@@ -88,7 +88,7 @@ func UpgradeServerlessTo(ctx *test.Context, csv, source string, timeout time.Dur
 }
 
 func UpgradeServerless(ctx *test.Context) error {
-	return UpgradeServerlessTo(ctx, test.Flags.CSV, test.Flags.CatalogSource, DefaultInstallPlanTimeout)
+	return UpgradeServerlessTo(ctx, test.Flags.CSV, test.Flags.UpgradeCatalogSource, DefaultInstallPlanTimeout)
 }
 
 func DowngradeServerless(ctx *test.Context) error {
@@ -119,7 +119,7 @@ func DowngradeServerless(ctx *test.Context) error {
 		return err
 	}
 
-	if _, err := test.CreateSubscription(ctx, subscription, test.Flags.CSVPrevious); err != nil {
+	if _, err := test.CreateSubscription(ctx, subscription, test.Flags.CSVPrevious, test.Flags.Channel, test.Flags.CatalogSource); err != nil {
 		return err
 	}
 

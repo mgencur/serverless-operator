@@ -21,7 +21,8 @@ var Flags = initializeFlags()
 // FlagsStruct is struct that defines testing options
 type FlagsStruct struct {
 	Kubeconfigs             string // Path to .kube/config
-	CatalogSource           string // CatalogSource for the Serverless operator Subscription. Might be a list of catalog sources separated by comma.
+	CatalogSource           string // CatalogSource for initial installation and downgrades.
+	UpgradeCatalogSource    string // CatalogSource for upgrades.
 	Channel                 string // Serverless operator Subscription channel
 	Subscription            string // Serverless operator Subscription name
 	UpgradeChannel          string // Target OLM channel for upgrades
@@ -48,7 +49,9 @@ func initializeFlags() *FlagsStruct {
 	flag.StringVar(&f.Kubeconfigs, "kubeconfigs", defaultKubeconfig,
 		"Provide the path to the `kubeconfig` file you'd like to use for these tests. The `current-context` will be used.")
 	flag.StringVar(&f.CatalogSource, "catalogsource", "serverless-operator",
-		"CatalogSource in the openshift-marketplace namespace for the Serverless operator Subscription, \"serverless-operator\" by default")
+		"CatalogSource for initial installation and downgrades, \"serverless-operator\" by default")
+	flag.StringVar(&f.UpgradeCatalogSource, "upgradecatalogsource", "serverless-operator",
+		"CatalogSource for upgrades, \"serverless-operator\" by default")
 	flag.StringVar(&f.Channel, "channel", "",
 		"Serverless operator Subscription channel, empty by default.")
 	flag.StringVar(&f.Subscription, "subscription", "serverless-operator",

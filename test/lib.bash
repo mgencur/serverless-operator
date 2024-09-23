@@ -493,6 +493,7 @@ EOF
     "--imagetemplate=${image_template}" \
     "--images.producer.file=${images_file}" \
     "--catalogsource=${OLM_SOURCE}" \
+    "--upgradecatalogsource=${OLM_UPGRADE_SOURCE}" \
     "--channel=${OLM_CHANNEL}" \
     "--upgradechannel=${OLM_UPGRADE_CHANNEL}" \
     "--csv=${CURRENT_CSV}" \

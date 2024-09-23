@@ -59,7 +59,7 @@ func DeleteSubscription(ctx *Context, name, namespace string) error {
 	return ctx.Clients.OLM.OperatorsV1alpha1().Subscriptions(namespace).Delete(context.Background(), name, metav1.DeleteOptions{})
 }
 
-func Subscription(subscriptionName, startingCSV string) *operatorsv1alpha1.Subscription {
+func Subscription(subscriptionName, startingCSV, channel, source string) *operatorsv1alpha1.Subscription {
 	return &operatorsv1alpha1.Subscription{
 		TypeMeta: metav1.TypeMeta{
 			Kind:       operatorsv1alpha1.SubscriptionKind,
@@ -70,18 +70,18 @@ func Subscription(subscriptionName, startingCSV string) *operatorsv1alpha1.Subsc
 			Name:      subscriptionName,
 		},
 		Spec: &operatorsv1alpha1.SubscriptionSpec{
-			CatalogSource:          Flags.CatalogSource,
+			CatalogSource:          source,
 			CatalogSourceNamespace: OLMNamespace,
 			Package:                ServerlessOperatorPackage,
-			Channel:                Flags.Channel,
+			Channel:                channel,
 			InstallPlanApproval:    operatorsv1alpha1.ApprovalManual,
 			StartingCSV:            startingCSV,
 		},
 	}
 }
 
-func CreateSubscription(ctx *Context, name, startingCSV string) (*operatorsv1alpha1.Subscription, error) {
-	subs, err := ctx.Clients.OLM.OperatorsV1alpha1().Subscriptions(OperatorsNamespace).Create(context.Background(), Subscription(name, startingCSV), metav1.CreateOptions{})
+func CreateSubscription(ctx *Context, name, startingCSV, channel, source string) (*operatorsv1alpha1.Subscription, error) {
+	subs, err := ctx.Clients.OLM.OperatorsV1alpha1().Subscriptions(OperatorsNamespace).Create(context.Background(), Subscription(name, startingCSV, channel, source), metav1.CreateOptions{})
 	if err != nil {
 		return nil, err
 	}

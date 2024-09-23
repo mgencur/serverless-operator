@@ -70,6 +70,7 @@ export OLM_CHANNEL
 # Change this when upgrades need switching to a different channel
 export OLM_UPGRADE_CHANNEL="${OLM_UPGRADE_CHANNEL:-"$OLM_CHANNEL"}"
 export OLM_SOURCE="${OLM_SOURCE:-"$OPERATOR"}"
+export OLM_UPGRADE_SOURCE="${OLM_UPGRADE_SOURCE:-"$OLM_SOURCE"}"
 export TEST_KNATIVE_UPGRADE="${TEST_KNATIVE_UPGRADE:-true}"
 export TEST_KNATIVE_E2E="${TEST_KNATIVE_E2E:-true}"
 export TEST_KNATIVE_SERVING="${TEST_KNATIVE_SERVING:-false}"
