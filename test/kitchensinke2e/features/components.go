@@ -292,7 +292,7 @@ var jobSink = genericComponent{
 	gvr:        jobsink.GVR(),
 	install: func(name string, _ ...manifest.CfgFn) feature.StepFn {
 		return func(ctx context.Context, t feature.T) {
-			jobsink.Install(name)(ctx, t)
+			jobsink.Install(name, jobsink.WithForwarderJob("non-existent-url"))(ctx, t)
 		}
 	},
 }
