@@ -290,6 +290,8 @@ var jobSink = genericComponent{
 	label:      "JobSink",
 	kind:       "JobSink",
 	gvr:        jobsink.GVR(),
+	// Workaround for https://github.com/knative/eventing/issues/8295
+	isReady: jobsink.IsAddressable,
 	install: func(name string, _ ...manifest.CfgFn) feature.StepFn {
 		return func(ctx context.Context, t feature.T) {
 			jobsink.Install(name, jobsink.WithForwarderJob("non-existent-url"))(ctx, t)
