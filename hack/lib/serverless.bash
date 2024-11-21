@@ -103,6 +103,10 @@ spec:
   sourceNamespace: "${OLM_NAMESPACE}"
   installPlanApproval: Manual
   startingCSV: "${csv}"
+  config:
+    env:
+      - name: ROUTE_HAPROXY_TIMEOUT
+        value: '30'
 EOF
   [ -n "$OPENSHIFT_CI" ] && cat "$tmpfile"
   oc apply -f "$tmpfile"
