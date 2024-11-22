@@ -23,8 +23,8 @@ spec:
       stable-window: "60s"
       tick-interval: "2s"
     defaults:
-      revision-timeout-seconds: "30"
-      max-revision-timeout-seconds: "30"
+      revision-timeout-seconds: "180"
+      max-revision-timeout-seconds: "180"
     deployment:
       registriesSkippingTagResolving: "ko.local,dev.local"
       progressDeadline: "120s"
