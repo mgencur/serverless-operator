@@ -277,7 +277,9 @@ function downstream_eventing_e2e_rekt_tests {
       --istio.enabled="$MESH" \
       "$@"
   else
-    go_test_e2e "${RUN_FLAGS[@]}" ./test/eventinge2erekt \
+    echo -e "Images file: \n"
+    cat "${images_file}"
+    go_test_e2e "${RUN_FLAGS[@]}" ./test/eventinge2erekt -run=TestJobSinkSuccess \
       --images.producer.file="${images_file}" \
       --poll.timeout=8m \
       "$@"

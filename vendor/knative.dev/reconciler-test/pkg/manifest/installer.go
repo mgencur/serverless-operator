@@ -37,12 +37,15 @@ type CfgFn func(map[string]interface{})
 func InstallYamlFS(ctx context.Context, fsys fs.FS, base map[string]interface{}) (Manifest, error) {
 	env := environment.FromContext(ctx)
 	images, err := environment.ProduceImages(ctx)
+
 	if err != nil {
 		return nil, err
 	}
 	cfg := env.TemplateConfig(base)
 	f := feature.FromContext(ctx)
 	log := loggingFrom(ctx, "InstallYamlFS")
+
+	log.Infof("Images: %+v", images)
 
 	yamlsDir, err := ParseTemplatesFS(ctx, fsys, images, cfg)
 	if err != nil {
@@ -77,7 +80,7 @@ func InstallYamlFS(ctx context.Context, fsys fs.FS, base map[string]interface{})
 	// Temp
 	refs := manifest.References()
 	if j, err := json.MarshalIndent(refs, "", "  "); err == nil {
-		log.Debug("Created: ", string(j))
+		log.Info("Created: ", string(j))
 	} else {
 		log.Fatal(err)
 	}

@@ -101,10 +101,11 @@ func executeTemplatesFS(ctx context.Context, fsys fs.FS, suffix string, images m
 
 			// Set image.
 			yaml := buffer.String()
+			log.Infof("=== Yaml before replace: %v\n", yaml)
 			for key, image := range images {
 				yaml = strings.Replace(yaml, key, image, -1)
 			}
-
+			log.Infof("=== Yaml after replace: %v\n", yaml)
 			files[path] = yaml
 		}
 		return nil

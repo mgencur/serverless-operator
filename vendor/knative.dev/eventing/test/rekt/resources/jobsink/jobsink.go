@@ -70,6 +70,8 @@ func Install(name string, opts ...manifest.CfgFn) feature.StepFn {
 			fn(cfg)
 		}
 
+		t.Logf("Cfg: %+v", cfg)
+
 		if _, err := manifest.InstallYamlFS(ctx, yamlEmbed, cfg); err != nil {
 			t.Fatal(err)
 		}
