@@ -70,9 +70,9 @@ func Install(name string, opts ...manifest.CfgFn) feature.StepFn {
 			fn(cfg)
 		}
 
-		t.Logf("Image: %s", eventshub.ImageFromContext(ctx))
-		t.Logf("Cfg: %+v", cfg)
-
+		if err := registerImage(ctx); err != nil {
+			t.Fatal(err)
+		}
 		if _, err := manifest.InstallYamlFS(ctx, yamlEmbed, cfg); err != nil {
 			t.Fatal(err)
 		}
@@ -205,4 +205,11 @@ func AsKReference(name string) *duckv1.KReference {
 		Name:       name,
 		APIVersion: GVR().GroupVersion().String(),
 	}
+}
+
+func registerImage(ctx context.Context) error {
+	im := eventshub.ImageFromContext(ctx)
+	reg := environment.RegisterPackage(im)
+	_, err := reg(ctx, environment.FromContext(ctx))
+	return err
 }
