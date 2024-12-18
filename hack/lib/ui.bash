@@ -80,7 +80,7 @@ function debugging.setup {
 function debugging.finish {
   # Close the output:
   set +x
-  exec 19>&-
+  exec 19>&- 1>&- 2>&-
 
   if [ -n "${SHARED_DIR:-}" ] && [ -n "${JOB_NAME_SAFE:-}" ]; then
     tar -czvf "${SHARED_DIR}/${JOB_NAME_SAFE}-testlog.tar.gz" "${ARTIFACTS}"/debuglog-*.log "${ARTIFACTS}"/stdout-*.log "${ARTIFACTS}"/stderr-*.log || true
